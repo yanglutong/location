@@ -1,0 +1,1155 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/y30">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:orientation="horizontal">
+
+            <!--<ImageView-->
+            <!--android:id="@+id/iv1"-->
+            <!--android:layout_width="15dp"-->
+            <!--android:layout_height="15dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:background="@mipmap/tuoyuan_green"-->
+            <!--android:gravity="center" />-->
+
+            <!--<TextView-->
+            <!--android:id="@+id/tv1"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_toRightOf="@id/iv1"-->
+            <!--android:gravity="center"-->
+            <!--android:text="设备1" />-->
+
+            <!--<ImageView-->
+            <!--android:id="@+id/iv2"-->
+            <!--android:layout_width="15dp"-->
+            <!--android:layout_height="15dp"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:layout_toRightOf="@id/tv1"-->
+            <!--android:background="@mipmap/red"-->
+            <!--android:gravity="center" />-->
+
+            <!--<TextView-->
+
+            <!--android:id="@+id/tv2"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_toRightOf="@+id/iv2"-->
+            <!--android:gravity="center"-->
+            <!--android:text="设备2" />-->
+            <!--<EditText-->
+            <!--android:enabled="false"-->
+            <!--android:layout_width="30dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:inputType="number"-->
+            <!--android:maxLength="15"-->
+            <!--android:textCursorDrawable="@drawable/color_cursor"-->
+            <!--android:theme="@style/MyEditText" />-->
+            <EditText
+                android:id="@+id/et_zhenmasearch_sos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="130dp"
+                android:background="@null"
+                android:inputType="number"
+                android:maxLength="15"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:theme="@style/MyEditText" />
+
+            <TextView
+                android:id="@+id/sos_tv_searchNum_zm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="145dp"
+                android:layout_toLeftOf="@+id/textView_sos"
+                android:text="(0)" />
+
+
+            <TextView
+                android:id="@+id/textView_sos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+
+                android:layout_toLeftOf="@+id/sos_ib_qc_sos"
+                android:gravity="left"
+                android:text="侦码记录 " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+
+                android:text="" />
+
+            <ImageButton
+
+                android:id="@+id/sos_ib_qc_sos"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="45dp"
+                android:background="@mipmap/qk"
+                android:padding="10dp" />
+
+            <ImageButton
+
+                android:id="@+id/ib_dc_zm"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="15dp"
+                android:background="@mipmap/dc"
+                android:padding="10dp" />
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:background="@mipmap/search1" />
+
+            <ImageButton
+                android:id="@+id/in_daochu_sos"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_marginRight="15dp"
+                android:background="@mipmap/zheide"
+                android:padding="10dp"
+                android:visibility="invisible" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <include layout="@layout/main_liesgk" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ry_sos"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/y60" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray" />
+            <Button
+                android:layout_margin="@dimen/x2"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/bts_sos_mubiao1"
+                android:layout_width="@dimen/x90"
+                android:layout_height="@dimen/x20"
+                android:background="@color/gray"
+
+                android:text="选择定位目标"
+                android:textSize="12dp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/iv1"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_centerVertical="true"
+                        android:background="@mipmap/tuoyuan_green"
+                        android:gravity="center" />
+
+                    <TextView
+                        android:id="@+id/tv1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@id/iv1"
+                        android:gravity="center"
+                        android:text="设备1" />
+
+                    <ImageView
+                        android:id="@+id/iv2"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:layout_toRightOf="@id/tv1"
+                        android:background="@mipmap/red"
+                        android:gravity="center"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tv2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/iv2"
+                        android:gravity="center"
+                        android:text="设备2"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/ib_zhedie"
+                        android:text="能量曲线        " />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_toLeftOf="@+id/ib_zhedie"
+                        android:text="" />
+
+                    <ImageButton
+
+                        android:id="@+id/ib_zhedie"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginRight="15dp"
+                        android:background="@mipmap/zheide"
+                        android:padding="10dp" />
+                </RelativeLayout>
+
+                <com.sm.android.locations.locations.Utils.View.LineChartView
+                    android:id="@+id/line_chart_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="20dp"
+                    android:paddingRight="20dp"
+                    android:visibility="gone" />
+            </RelativeLayout>
+            <!--侦码记录-->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:orientation="horizontal">
+
+                    <!--<ImageView-->
+                    <!--android:id="@+id/iv1"-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="15dp"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:background="@mipmap/tuoyuan_green"-->
+                    <!--android:gravity="center" />-->
+
+                    <!--<TextView-->
+                    <!--android:id="@+id/tv1"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_toRightOf="@id/iv1"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="设备1" />-->
+
+                    <!--<ImageView-->
+                    <!--android:id="@+id/iv2"-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="15dp"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_marginLeft="10dp"-->
+                    <!--android:layout_toRightOf="@id/tv1"-->
+                    <!--android:background="@mipmap/red"-->
+                    <!--android:gravity="center" />-->
+
+                    <!--<TextView-->
+
+                    <!--android:id="@+id/tv2"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_toRightOf="@+id/iv2"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="设备2" />-->
+                    <!--<EditText-->
+                    <!--android:enabled="false"-->
+                    <!--android:layout_width="30dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:inputType="number"-->
+                    <!--android:maxLength="15"-->
+                    <!--android:textCursorDrawable="@drawable/color_cursor"-->
+                    <!--android:theme="@style/MyEditText" />-->
+                    <EditText
+                        android:id="@+id/et_zhenmasearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="130dp"
+                        android:background="@null"
+                        android:inputType="number"
+                        android:maxLength="15"
+                        android:textCursorDrawable="@drawable/color_cursor"
+                        android:theme="@style/MyEditText" />
+
+                    <TextView
+                        android:id="@+id/tv_searchNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="135dp"
+                        android:text="(1000)" />
+
+                    <Button
+                        android:id="@+id/bt_search"
+                        android:layout_width="60dp"
+                        android:layout_height="30dp"
+                        android:layout_alignBaseline="@+id/et_zhenmasearch"
+                        android:layout_alignBottom="@+id/et_zhenmasearch"
+                        android:layout_marginEnd="11dp"
+                        android:layout_marginRight="11dp"
+                        android:layout_toStartOf="@+id/textView2"
+                        android:layout_toLeftOf="@+id/textView2"
+                        android:background="@mipmap/zhedie_search_blue"
+                        android:visibility="gone" />
+
+                    <TextView
+
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/ib_zhedie_zhenma"
+                        android:gravity="left"
+                        android:text="侦码记录        " />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_toLeftOf="@+id/ib_zhedie_zhenma"
+                        android:text="" />
+
+                    <ImageButton
+
+                        android:id="@+id/ib_zhedie_zhenma"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginRight="15dp"
+                        android:background="@mipmap/zheide"
+                        android:padding="10dp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignTop="@+id/bt_search"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:background="@mipmap/search1" />
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray" />
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_sos_juli"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/x30"
+                    android:layout_marginTop="@dimen/x2"
+                    android:text="探测距离参考值(321米)" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_sos"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="@dimen/x20"
+                    android:layout_marginRight="@dimen/x20"
+                    android:max="486"
+                    android:maxHeight="6dip"
+                    android:min="1"
+                    android:minHeight="6dip"
+                    android:progress="486"
+                    android:progressDrawable="@drawable/seekbar"
+                    android:thumb="@drawable/select_seekbar" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/iv1_sos"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_centerVertical="true"
+                            android:background="@mipmap/tuoyuan_green"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tv1_sos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/iv1_sos"
+                            android:gravity="center"
+                            android:text="设备1" />
+
+                        <ImageView
+                            android:visibility="gone"
+                            android:id="@+id/iv2_sos"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_toRightOf="@id/tv1_sos"
+                            android:background="@mipmap/red"
+                            android:gravity="center" />
+
+                        <TextView
+                            android:id="@+id/tv2_sos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@+id/iv2_sos"
+                            android:gravity="center"
+                            android:text="设备2"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@+id/ib_zhedie_sos"
+                            android:text="能量曲线        " />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:layout_toLeftOf="@+id/ib_zhedie_sos"
+                            android:text="" />
+
+                        <ImageButton
+
+                            android:id="@+id/ib_zhedie_sos"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerInParent="true"
+                            android:layout_marginRight="15dp"
+                            android:background="@mipmap/zheide"
+                            android:padding="10dp" />
+                    </RelativeLayout>
+
+                    <com.sm.android.locations.locations.Utils.View.LineChartView
+                        android:id="@+id/line_chart_view_sos"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginRight="20dp"
+                        android:paddingRight="20dp"
+                        android:visibility="gone" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:text="     运营商" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/x1"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+
+                    <CheckBox
+                        android:id="@+id/cb_sos1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#2f8dff"
+                        android:checked="true"
+                        android:text="移动TDD"></CheckBox>
+
+                    <CheckBox
+                        android:id="@+id/cb_sos2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#2f8dff"
+                        android:text="移动FDD"></CheckBox>
+
+                    <CheckBox
+                        android:id="@+id/cb_sos3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#2f8dff"
+                        android:text="联通FDD"></CheckBox>
+
+                    <CheckBox
+                        android:id="@+id/cb_sos4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="#2f8dff"
+                        android:text="电信FDD"></CheckBox>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_zhenma_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include layout="@layout/main_lies_zhenma_search" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/ry_zhenma"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!--频点1 频点2-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:background="@color/main_colors"
+                android:weightSum="2">
+                <!--频点1-->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="2"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <!--                    <TextView-->
+                    <!--                        android:layout_margin="5dp"-->
+                    <!--                        android:id="@+id/tv_pin1gk"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="14dp"-->
+                    <!--                        android:layout_centerVertical="true"-->
+                    <!--                        android:layout_toRightOf="@+id/iv_ll1"-->
+                    <!--                        android:text="设备1频点"-->
+                    <!--                        android:textSize="12dp" />-->
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x2"
+                        android:gravity="center|left"
+                        android:orientation="horizontal">
+
+                        <ImageView
+
+                            android:layout_width="2dp"
+                            android:layout_height="12dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="2dp"
+                            android:background="@color/main_color" />
+
+                        <TextView
+                            android:id="@+id/tv_pin1_sos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="14dp"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="5dp"
+                            android:layout_toRightOf="@+id/iv_ll1"
+                            android:text="频点"
+                            android:textSize="12dp" />
+
+                        <ImageView
+                            android:id="@+id/laba1_sos"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="5dp"
+                            android:background="@mipmap/laba_green" />
+                    </RelativeLayout>
+
+<!--                    <View-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="2dp"-->
+<!--                        android:background="@color/main_hui" />-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv_imsi1_sos"-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:gravity="center"-->
+                    <!--                        android:text=""-->
+                    <!--                        android:textSize="16sp" />-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/y25"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!--                            <TextView-->
+                            <!--                                android:id="@+id/tv_sb1_jl_sos"-->
+                            <!--                                android:layout_width="wrap_content"-->
+                            <!--                                android:layout_height="@dimen/y25"-->
+                            <!--                                android:layout_gravity="center"-->
+                            <!--                                android:gravity="center"-->
+                            <!--                                android:text=""-->
+                            <!--                                android:textColor="@color/main_color"-->
+                            <!--                                android:textSize="30dp" />-->
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom"
+                            android:layout_marginBottom="2dp"
+                            android:background="@color/gray"
+                            android:visibility="gone" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <!--                            <TextView-->
+                            <!--                                android:id="@+id/sb1_jl_pj1"-->
+                            <!--                                android:layout_width="wrap_content"-->
+                            <!--                                android:layout_height="wrap_content"-->
+                            <!--                                android:layout_gravity="center"-->
+                            <!--                                android:gravity="center"-->
+                            <!--                                android:text=""-->
+                            <!--                                android:textColor="@color/main_color"-->
+                            <!--                                android:textSize="15dp" />-->
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text="平均能量值"
+                                android:textSize="15dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/tv_zy1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:visibility="gone" />
+
+                    <SeekBar
+                        android:id="@+id/seekbar1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:max="72"
+                        android:min="0"
+                        android:progressDrawable="@drawable/bg_adjust_seek_bar"
+                        android:tooltipText="100"
+                        android:visibility="gone" />
+
+                    <!--                    <LinearLayout-->
+                    <!--                        android:layout_width="match_parent"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:layout_gravity="center"-->
+                    <!--                        android:gravity="center"-->
+                    <!--                        android:orientation="horizontal"-->
+                    <!--                        android:weightSum="3">-->
+
+                    <!--                        <CheckBox-->
+                    <!--                            android:id="@+id/cbzt1_d_sos"-->
+                    <!--                            android:layout_width="0dp"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:buttonTint="#2f8dff"-->
+                    <!--                            android:text="低" />-->
+
+                    <!--                        <CheckBox-->
+                    <!--                            android:id="@+id/cbzt1_z_sos"-->
+                    <!--                            android:layout_width="0dp"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:buttonTint="#2f8dff"-->
+                    <!--                            android:text="中" />-->
+
+                    <!--                        <CheckBox-->
+                    <!--                            android:id="@+id/cbzt1_g_sos"-->
+                    <!--                            android:layout_width="0dp"-->
+                    <!--                            android:layout_height="wrap_content"-->
+                    <!--                            android:layout_weight="1"-->
+                    <!--                            android:buttonTint="#2f8dff"-->
+                    <!--                            android:text="高" />-->
+                    <!--                    </LinearLayout>-->
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/main_hui" />
+
+                    <!--                    <com.sm.android.locations.locations.Utils.View.MyScrollView-->
+                    <!--                        android:id="@+id/scrollView1_sos"-->
+                    <!--                        android:layout_width="fill_parent"-->
+                    <!--                        android:layout_height="50dp"-->
+                    <!--                        android:background="@android:drawable/edit_text"-->
+                    <!--                        android:scrollbarStyle="outsideOverlay">-->
+
+                    <!--                        <TextView-->
+                    <!--                            android:id="@+id/textViews_sos1"-->
+                    <!--                            android:layout_width="match_parent"-->
+                    <!--                            android:layout_height="match_parent"-->
+                    <!--                            android:layout_marginLeft="10dp"-->
+                    <!--                            android:text=""-->
+                    <!--                            android:textSize="12dp" />-->
+                    <!--                    </com.sm.android.locations.locations.Utils.View.MyScrollView>-->
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/main_hui" />
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv1_type_sos"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="当前状态: " />-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv1_td_sos"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="双工模式: " />-->
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv1_wifi_sos"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="WIFI连接: " />-->
+
+
+                </LinearLayout>
+                <!--频点2-->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:layout_weight="1"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/x2"
+                        android:gravity="center|left"
+                        android:orientation="horizontal">
+
+                        <ImageView
+
+                            android:layout_width="2dp"
+                            android:layout_height="12dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="2dp"
+                            android:background="@color/main_color" />
+
+                        <TextView
+                            android:id="@+id/tv_pin2sos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="14dp"
+                            android:layout_centerVertical="true"
+                            android:layout_margin="5dp"
+                            android:layout_toRightOf="@+id/iv_ll1"
+                            android:text="设备2频点"
+                            android:textSize="12dp" />
+
+                        <ImageView
+                            android:id="@+id/laba2_sos"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="5dp"
+                            android:background="@mipmap/laba_red" />
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:background="@color/main_hui" />
+
+                    <TextView
+                        android:id="@+id/tv_imsi2_sos"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/y25"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/sb1_j2_sos"
+                                android:layout_width="wrap_content"
+                                android:layout_height="@dimen/y25"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:textColor="@color/main_color"
+                                android:textSize="30dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="10dp"
+                                android:gravity="center"
+                                android:text="当前能量值"
+                                android:textSize="15dp"
+                                android:visibility="gone" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="bottom"
+                            android:layout_marginBottom="2dp"
+                            android:background="@color/gray"
+                            android:visibility="gone" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:id="@+id/sb1_jl_pj2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text=""
+                                android:textColor="@color/main_color"
+                                android:textSize="15dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:text="平均能量值"
+                                android:textSize="15dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:id="@+id/tv_zy2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:visibility="gone" />
+
+                    <SeekBar
+                        android:id="@+id/seekbar2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:max="72"
+                        android:min="0"
+                        android:progressDrawable="@drawable/bg_adjust_seek_bar2"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <CheckBox
+                            android:id="@+id/cbzt2_d_sos"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="#2f8dff"
+                            android:text="低" />
+
+                        <CheckBox
+                            android:id="@+id/cbzt2_z_sos"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="#2f8dff"
+                            android:text="中" />
+
+                        <CheckBox
+                            android:id="@+id/cbzt2_g_sos"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:buttonTint="#2f8dff"
+                            android:text="高" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/main_hui" />
+
+                    <com.sm.android.locations.locations.Utils.View.MyScrollView
+                        android:id="@+id/scrollView2_sos"
+                        android:layout_width="fill_parent"
+                        android:layout_height="60dp"
+
+                        android:background="@android:drawable/edit_text"
+                        android:scrollbarStyle="outsideOverlay">
+
+                        <TextView
+                            android:id="@+id/textViews_sos2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="10dp"
+                            android:text=""
+                            android:textSize="12dp" />
+                    </com.sm.android.locations.locations.Utils.View.MyScrollView>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/main_hui" />
+
+                    <TextView
+                        android:id="@+id/tv2_type_sos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="当前状态: " />
+
+                    <TextView
+                        android:id="@+id/tv2_tf_sos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="双工模式: " />
+
+                    <TextView
+                        android:id="@+id/tv2_wifi_sos"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="WIFI连接: " />
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal">
+
+
+
+
+                </LinearLayout>
+
+                <include
+                    android:id="@+id/r1"
+                    layout="@layout/yanpan_sostab" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal"
+                    android:visibility="gone">
+
+                    <Button
+
+                        android:id="@+id/bts_sos_mubiao2"
+                        android:layout_width="@dimen/x90"
+                        android:layout_height="@dimen/x20"
+                        android:background="@color/gray"
+
+                        android:text="选择定位目标"
+                        android:textSize="12dp" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+<!--            <View-->
+<!--                android:background="@color/hui"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"/>-->
+<!--            <View-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="1dp"-->
+<!--                android:background="@color/gray" />-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2">
+
+                <!--                <Button-->
+                <!--                    android:id="@+id/bts_start_sos"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_margin="@dimen/x5"-->
+                <!--                    android:layout_weight="1"-->
+                <!--                    android:background="@color/blue"-->
+                <!--                    android:text="启动" />-->
+
+                <!--                <Button-->
+                <!--                    android:id="@+id/bts_stop_sos"-->
+                <!--                    android:layout_width="wrap_content"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_margin="@dimen/x5"-->
+                <!--                    android:layout_weight="1"-->
+                <!--                    android:background="@color/bg_gray"-->
+                <!--                    android:text="停止" />-->
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white" />
+
+        </LinearLayout>
+        <!--            <TextView-->
+        <!--                android:background="@color/white"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"/>-->
+
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="190dp"
+    android:weightSum="2">
+    <!--    左边布局-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_imsi1_sos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="18dp"
+            android:text="11111"
+            />
+
+        <TextView
+
+            android:id="@+id/tv_sb1_jl_sos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="28dp"
+            android:text="11111"
+            android:textColor="@color/main_color"
+          />
+        </LinearLayout>
+
+        <Button
+
+            android:id="@+id/bts_start_sos"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_margin="6dp"
+            android:layout_weight="1"
+            android:background="@color/main_hui"
+
+            android:text="启动"
+            android:textColor="@color/main_color"
+            android:textSize="12dp" />
+
+        <com.sm.android.locations.locations.Utils.View.MyScrollView
+            android:id="@+id/scrollView1_sos"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:background="@android:drawable/edit_text"
+            android:scrollbarStyle="outsideOverlay">
+
+            <TextView
+                android:id="@+id/textViews_sos1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:text=""
+                android:textSize="12dp" />
+        </com.sm.android.locations.locations.Utils.View.MyScrollView>
+    </LinearLayout>
+    <!--    //右边布局-->
+    <LinearLayout
+
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+
+        android:layout_weight="1"
+        android:background="@color/white"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+           ></RelativeLayout>
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_r1dw"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_centerVertical="true"-->
+        <!--                android:text="频点:"-->
+        <!--                android:textSize="15dp" />-->
+
+        <!--            <Spinner-->
+        <!--                android:id="@+id/mysp1"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_alignParentRight="true"-->
+        <!--                android:layout_centerVertical="true"-->
+        <!--                android:layout_marginLeft="5dp"-->
+        <!--                android:layout_toRightOf="@+id/tv_r1"-->
+        <!--                android:defaultFocusHighlightEnabled="false"></Spinner>-->
+        <!--            >-->
+        <!--        </RelativeLayout>-->
+
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:orientation="horizontal">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_r1dw"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_centerVertical="true"-->
+        <!--                android:text="频点:"-->
+        <!--                android:textSize="15dp" />-->
+
+        <!--            <Spinner-->
+        <!--                android:id="@+id/mysp11"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"></Spinner>-->
+
+        <!--        </LinearLayout>-->
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <CheckBox
+                android:id="@+id/cbzt1_d_sos"
+                android:layout_width="0dp"
+                android:layout_height="20dp"
+                android:layout_weight="1"
+                android:buttonTint="#2f8dff"
+                android:text="低" />
+
+            <CheckBox
+                android:id="@+id/cbzt1_z_sos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#2f8dff"
+                android:text="中" />
+
+            <CheckBox
+                android:id="@+id/cbzt1_g_sos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:buttonTint="#2f8dff"
+                android:text="高" />
+        </LinearLayout>
+
+
+
+        <Button
+
+            android:id="@+id/bts_stop_sos"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_margin="6dp"
+            android:background="@color/main_hui"
+            android:onClick="stopLocation1"
+            android:text="停止"
+            android:textColor="@color/main_color"
+            android:textSize="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv1_type_sos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="当前状态: " />
+
+            <TextView
+                android:id="@+id/tv1_td_sos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="双工模式: " />
+
+            <TextView
+                android:id="@+id/tv1_wifi_sos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:text="WIFI连接: " />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">单频便携搜救</string>
+<!--    <string name="app_name2">新版双频定位系统</string>-->
+    <string name="activity_title">手动定位</string>
+    <string name="activity_saopintitle">扫频定位</string>
+    <string name="manually_locate">手动定位</string>
+    <string name="automatic_positioning">手动定位</string>
+    <string name="addparam_activity">添加参数</string>
+    <string name="param_activity">目标IMSI</string>
+    <string name="upparam_activity">修改参数</string>
+    <string name="coummunity_activity1">设备1</string>
+    <string name="coummunity_activity2">设备2</string>
+    <string name="coummunity_activity">设备设置</string>
+    <string name="pin_activity2">频点设置</string>
+    <string name="saopinlistActivity">扫频设置</string>
+    <string name="xiaoqusaopin">小区信息</string>
+    <string name="deviceinfo">设备信息</string>
+    <string name="personnelConfig">人员管理</string>
+    <string name="zhenmafenxiimsilist">侦码IMSI查看</string>
+    <string name="zhengmafenxipzshow">碰撞分析</string>
+    <string name="zhengmafenxiBSshow">伴随分析</string>
+    <string name="zhenmafenxi">侦码数据分析</string>
+    <string name="lunxunlistActivity">轮循设置</string>
+</resources>

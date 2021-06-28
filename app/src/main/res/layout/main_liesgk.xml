@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_tab"
+    android:layout_width="match_parent"
+    android:layout_height="25dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <TextView
+            android:textSize="10dp"
+            android:id="@+id/tv_num"
+            style="@style/main_lie"
+            android:text="序号" />
+
+        <TextView
+            android:textSize="10dp"
+            android:id="@+id/tv_datatime"
+            style="@style/main_lie"
+            android:text="时间" />
+
+        <TextView
+            android:id="@+id/tv_imsi"
+            style="@style/main_lie"
+            android:layout_weight="5"
+            android:text="IMSI" />
+
+        <TextView
+            android:id="@+id/tv_down"
+            style="@style/main_lie"
+            android:text="下行频点" />
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/tv_sb"
+            style="@style/main_lie"
+            android:text="设备" />
+
+        <TextView
+
+            android:id="@+id/tv_sum"
+            style="@style/main_lie"
+            android:layout_marginRight="2dp"
+            android:layout_weight="2"
+            android:text="吸附次数" />
+    </LinearLayout>
+</RelativeLayout>
