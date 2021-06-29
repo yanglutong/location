@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Activity.TestActivity">
-    <com.sm.android.locations.locations.Utils.View.MySpinner
+    <com.sm.android.locations.location.Utils.View.MySpinner
         android:id="@+id/sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

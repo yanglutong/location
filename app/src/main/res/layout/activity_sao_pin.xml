@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.sm.android.locations.locations.Activity.SaoPin.SaoPinActivity.SaoPinActivity">
+    tools:context="com.sm.android.locations.location.Activity.SaoPin.SaoPinActivity.SaoPinActivity">
 
     <include layout="@layout/tabs" />
 

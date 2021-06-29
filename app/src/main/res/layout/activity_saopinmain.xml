@@ -113,7 +113,7 @@
                             android:padding="10dp" />
                     </RelativeLayout>
 
-                    <com.sm.android.locations.locations.Utils.View.LineChartView
+                    <com.sm.android.locations.location.Utils.View.LineChartView
                         android:id="@+id/line_chart_view"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
@@ -361,7 +361,7 @@
                                 android:textSize="12dp" />
                         </LinearLayout>
 
-                        <com.sm.android.locations.locations.Utils.View.MyScrollView
+                        <com.sm.android.locations.location.Utils.View.MyScrollView
                             android:id="@+id/scrollView"
                             android:layout_width="fill_parent"
                             android:layout_height="100dp"
@@ -375,7 +375,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:textSize="12dp" />
-                        </com.sm.android.locations.locations.Utils.View.MyScrollView>
+                        </com.sm.android.locations.location.Utils.View.MyScrollView>
 
                         <View
                             android:layout_width="match_parent"
@@ -625,7 +625,7 @@
                                 android:textSize="12dp" />
                         </LinearLayout>
 
-                        <com.sm.android.locations.locations.Utils.View.MyScrollView
+                        <com.sm.android.locations.location.Utils.View.MyScrollView
                             android:id="@+id/scrollView2"
                             android:layout_width="fill_parent"
                             android:layout_height="100dp"
@@ -639,7 +639,7 @@
                                 android:layout_marginLeft="10dp"
                                 android:text=""
                                 android:textSize="12dp" />
-                        </com.sm.android.locations.locations.Utils.View.MyScrollView>
+                        </com.sm.android.locations.location.Utils.View.MyScrollView>
 
                         <View
                             android:layout_width="match_parent"

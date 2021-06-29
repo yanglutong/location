@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    tools:context="com.sm.android.locations.locations.Activity.LogsActivity">
+    tools:context="com.sm.android.locations.location.Activity.LogsActivity">
     <include layout="@layout/tabs" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

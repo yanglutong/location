@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.sm.android.locations.locations"
+    package="com.sm.android.locations.location"
     tools:ignore="MissingVersion">
     <!-- 网络状态 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -110,7 +110,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
-        android:name=".App.App"
+        android:name="com.sm.android.locations.location.App.App"
         android:allowBackup="true"
         android:icon="@mipmap/icon"
         android:label="@string/app_name"
@@ -118,26 +118,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity android:name=".viewpagermain.NewMainPager.NewMainActivity">
+        <activity android:name="com.sm.android.locations.location.viewpagermain.NewMainPager.NewMainActivity">
             <!--                        <intent-filter>-->
             <!--                            <action android:name="android.intent.action.MAIN" />-->
 
             <!--                            <category android:name="android.intent.category.LAUNCHER" />-->
             <!--                        </intent-filter>-->
         </activity>
-        <activity android:name=".viewpagermain.ViewPagerMainActivity"> <!-- 新轮播图主界面 -->
+        <activity android:name="com.sm.android.locations.location.viewpagermain.ViewPagerMainActivity"> <!-- 新轮播图主界面 -->
 <!--                                    <intent-filter>-->
 <!--                                        <action android:name="android.intent.action.MAIN" />-->
 
 <!--                                        <category android:name="android.intent.category.LAUNCHER" />-->
 <!--                                    </intent-filter>-->
         </activity>
-        <activity android:name=".Activity.LogsActivity" />
-        <activity android:name=".UpdateAdminActivity" />
-        <activity android:name=".Activity.Adminctivity" />
-        <activity android:name=".Activity.ConfigsActivity" />
-        <activity android:name=".Activity.AddParam.Param2Activity" /> <!-- 测试页面 -->
-        <activity android:name=".Activity.TestActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.LogsActivity" />
+        <activity android:name="com.sm.android.locations.location.UpdateAdminActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.Adminctivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.ConfigsActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.AddParam.Param2Activity" /> <!-- 测试页面 -->
+        <activity android:name="com.sm.android.locations.location.Activity.TestActivity" />
 
         <meta-data
             android:name="design_width_in_dp"
@@ -145,7 +145,7 @@
         <meta-data
             android:name="design_height_in_dp"
             android:value="640" /> <!-- wifi状态的监听 -->
-        <receiver android:name=".Receiver.ConnectionChangeReceiver">
+        <receiver android:name="com.sm.android.locations.location.Receiver.ConnectionChangeReceiver">
             <intent-filter>
                 <action
                     android:name="android.net.conn.CONNECTIVITY_CHANGE"
@@ -156,7 +156,7 @@
         </receiver> <!-- 主界面 -->
         <!-- android:screenOrientation="portrait"  禁止屏幕旋转 -->
         <activity
-            android:name=".Activity.Main.MainActivity"
+            android:name="com.sm.android.locations.location.Activity.Main.MainActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
 
@@ -168,12 +168,12 @@
 <!--             </intent-filter>-->
         </activity> <!-- 开屏页 -->
         <activity
-            android:name=".Activity.Tail.TailActivity"
+            android:name="com.sm.android.locations.location.Activity.Tail.TailActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <!-- 登录页 -->
         <activity
-            android:name=".Activity.Login.LoginActivity"
+            android:name="com.sm.android.locations.location.Activity.Login.LoginActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
             <!--                        <intent-filter>-->
@@ -186,7 +186,7 @@
 
         </activity>
         <!--        双频人工搜救-->
-        <activity android:name=".sos.SOSActivity">
+        <activity android:name="com.sm.android.locations.location.sos.SOSActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -195,64 +195,64 @@
             </intent-filter>
         </activity>
         <!--        选择定位目标窗口-->
-        <activity android:name=".sos.MubiaopSOS">
+        <activity android:name="com.sm.android.locations.location.sos.MubiaopSOS">
 
         </activity>
-        <activity android:name=".Activity.test.testAct">
+        <activity android:name="com.sm.android.locations.location.Activity.test.testAct">
 
 
         </activity>
         <activity
-            android:name=".Activity.SaoPin.SaopinList.SaoPinSetingActivity"
+            android:name="com.sm.android.locations.location.Activity.SaoPin.SaopinList.SaoPinSetingActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 选择参数列表 -->
         <!-- <activity -->
         <!-- android:name=".Activity.SaoPin.SaoPinActivity.SaopinMainActivity" -->
         <!-- android:screenOrientation="portrait" /> &lt;!&ndash; 扫频窗口 &ndash;&gt; -->
         <activity
-            android:name=".Activity.AddParam.AddParamActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.AddParamActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 选择参数 -->
         <activity
-            android:name=".Activity.AddParam.AddParamWhiteActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.AddParamWhiteActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 非控IMSI -->
         <activity
-            android:name=".Activity.AddParam.ParamActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.ParamActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 修改参数 -->
         <activity
-            android:name=".Activity.AddParam.ParamWhiteActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.ParamWhiteActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 修改参数 -->
         <activity
-            android:name=".Activity.AddParam.UpdataParamActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.UpdataParamActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 频点列表 -->
         <activity
-            android:name=".Activity.AddParam.UpdataParamWhiteActivity"
+            android:name="com.sm.android.locations.location.Activity.AddParam.UpdataParamWhiteActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 频点列表 -->
         <activity
-            android:name=".Activity.PinConfig.PinConfigActivity"
+            android:name="com.sm.android.locations.location.Activity.PinConfig.PinConfigActivity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 小区1 -->
         <activity
-            android:name=".Activity.Communit.Community01Activity"
+            android:name="com.sm.android.locations.location.Activity.Communit.Community01Activity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" /> <!-- 小区2 -->
         <activity
-            android:name=".Activity.Communit.Community02Activity"
+            android:name="com.sm.android.locations.location.Activity.Communit.Community02Activity"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-        <activity android:name=".Activity.SaoPin.SaoPinActivity.SaoPinActivity" />
-        <activity android:name=".Activity.Device.DeviceInfoActivity" />
-        <activity android:name=".Activity.PinConfig.PinConfigViewPagerActivity" />
-        <activity android:name=".Activity.Communit.CommunitViewPagerActivity" />
-        <activity android:name=".zhenma.ZhenmaSHowListdata" />
-        <activity android:name=".zhenma.ZhenmaBSShowActivity" />
-        <activity android:name=".zhenma.ZhenmaPZShowActivity" />
-        <activity android:name=".zhenma.ZhenmaFenxiActivity">
+        <activity android:name="com.sm.android.locations.location.Activity.SaoPin.SaoPinActivity.SaoPinActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.Device.DeviceInfoActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.PinConfig.PinConfigViewPagerActivity" />
+        <activity android:name="com.sm.android.locations.location.Activity.Communit.CommunitViewPagerActivity" />
+        <activity android:name="com.sm.android.locations.location.zhenma.ZhenmaSHowListdata" />
+        <activity android:name="com.sm.android.locations.location.zhenma.ZhenmaBSShowActivity" />
+        <activity android:name="com.sm.android.locations.location.zhenma.ZhenmaPZShowActivity" />
+        <activity android:name="com.sm.android.locations.location.zhenma.ZhenmaFenxiActivity">
 
             <!-- <intent-filter> -->
             <!-- <action android:name="android.intent.action.MAIN" /> -->
@@ -261,8 +261,8 @@
             <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
             <!-- </intent-filter> -->
         </activity> <!-- 侦码数据分析页面 -->
-        <activity android:name=".Lunxun.SaopinList.LunxunSetingActivity" />
-        <activity android:name=".Lunxun.LunxunPinActivity.LunxunPinActivity" />
+        <activity android:name="com.sm.android.locations.location.Lunxun.SaopinList.LunxunSetingActivity" />
+        <activity android:name="com.sm.android.locations.location.Lunxun.LunxunPinActivity.LunxunPinActivity" />
     </application>
 
 </manifest>

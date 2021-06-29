@@ -1,1 +1,2 @@
 include ':app', ':recyclerview', ':library', ':alphaview', ':ExcelLib'
+rootProject.name = "location"

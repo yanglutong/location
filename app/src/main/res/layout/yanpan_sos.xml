@@ -244,7 +244,7 @@
                         android:padding="10dp" />
                 </RelativeLayout>
 
-                <com.sm.android.locations.locations.Utils.View.LineChartView
+                <com.sm.android.locations.location.Utils.View.LineChartView
                     android:id="@+id/line_chart_view"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
@@ -505,7 +505,7 @@
                             android:padding="10dp" />
                     </RelativeLayout>
 
-                    <com.sm.android.locations.locations.Utils.View.LineChartView
+                    <com.sm.android.locations.location.Utils.View.LineChartView
                         android:id="@+id/line_chart_view_sos"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
@@ -1016,7 +1016,7 @@
                         android:layout_height="1dp"
                         android:background="@color/main_hui" />
 
-                    <com.sm.android.locations.locations.Utils.View.MyScrollView
+                    <com.sm.android.locations.location.Utils.View.MyScrollView
                         android:id="@+id/scrollView2_sos"
                         android:layout_width="fill_parent"
                         android:layout_height="60dp"
@@ -1031,7 +1031,7 @@
                             android:layout_marginLeft="10dp"
                             android:text=""
                             android:textSize="12dp" />
-                    </com.sm.android.locations.locations.Utils.View.MyScrollView>
+                    </com.sm.android.locations.location.Utils.View.MyScrollView>
 
                     <View
                         android:layout_width="match_parent"

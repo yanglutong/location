@@ -50,7 +50,7 @@
             android:textColor="@color/main_color"
             android:textSize="12dp" />
 
-        <com.sm.android.locations.locations.Utils.View.MyScrollView
+        <com.sm.android.locations.location.Utils.View.MyScrollView
             android:id="@+id/scrollView1_sos"
             android:layout_width="fill_parent"
             android:layout_height="60dp"
@@ -64,7 +64,7 @@
                 android:layout_marginLeft="10dp"
                 android:text=""
                 android:textSize="12dp" />
-        </com.sm.android.locations.locations.Utils.View.MyScrollView>
+        </com.sm.android.locations.location.Utils.View.MyScrollView>
     </LinearLayout>
     <!--    //右边布局-->
     <LinearLayout

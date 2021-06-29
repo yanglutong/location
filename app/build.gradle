@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     defaultConfig {
-        applicationId "com.sm.android.locations.locationsviewpager_dan_sos"
+        applicationId "com.sm.android.locations.location"
         minSdkVersion 15
         //noinspection OldTargetApi
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
