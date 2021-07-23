@@ -1,5 +1,6 @@
 package com.sm.android.locations.location.Activity.Device;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
@@ -10,11 +11,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import com.sm.android.locations.location.Base.BaseFragment;
 import com.sm.android.locations.location.R;
 import com.sm.android.locations.location.Utils.MainUtils.DeviceUtils;
+import com.sm.android.locations.location.initData.CommandUtils;
+import com.sm.android.locations.location.initData.PLMN;
+import com.sm.android.locations.location.sos.SOSActivity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import static com.sm.android.locations.location.Constant.Constant.DEVICENUMBER1;
 import static com.sm.android.locations.location.Constant.Constant.HARDWAREVERSION1;
@@ -25,10 +32,24 @@ import static com.sm.android.locations.location.Constant.Constant.UBOOTVERSION1;
 import static com.sm.android.locations.location.Constant.Constant.BOARDTEMPERATURE1;
 
 public class TextFragment0 extends BaseFragment {
+    private String SN1="";//采集设备编号  字符最大长度 16
+    private String MAC1="";//采集设备MAC地址  17
+    private String FW1="";//软件版本号  10
+    private boolean isHidde=false;
+    private String BAND1="";//Band
+    private String PLMN1="";//PLMN
+
+    private String RF1="";//射频状态
+    private String GPS1="";//GPS状态
+    private String CELL1="";//小区状态  小区是否建立成功：0：未建立 1:建立成功
+    private String TMP1="";//板卡温度
+    private  String CNM1="";// 空口同步状态
+    private  String SYNC1="";// 同步状态
+    private  String RIP1="";// 干扰测量
     private static String TAG = "TextFragment0";
     DecimalFormat df2;
     View view;
-    TextView tv_devicenumber, tv_hardware, tv_software, tv_sn, tv_mac, tvuboot, tvboard;
+    TextView tv_SN, tv_MAC, tv_FW, SYNC, RIP, RF, CNM,TMP;
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -56,19 +77,19 @@ public class TextFragment0 extends BaseFragment {
 
     @Override
     public void initData() {
-        df2 = new DecimalFormat("####.00");
+//        df2 = new DecimalFormat("####.00");
         findViews();
-        clear();
-        getData();
-
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("delayTAG", "---");
-                getData();
-                handler.postDelayed(this, 1000);
-            }
-        });
+//        clear();
+//        getData();
+//
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d("delayTAG", "---");
+//                getData();
+//                handler.postDelayed(this, 1000);
+//            }
+//        });
     }
 
     @Override
@@ -88,95 +109,185 @@ public class TextFragment0 extends BaseFragment {
         super.onResume();
         Log.d(TAG, "onResumeA: " + "执行了4");
         clear();
-        getData();
+//        getData();
+    }
+
+    private void getData() {
+        tv_SN.setText(SN1);
+        tv_MAC.setText(MAC1);
+        tv_FW.setText(FW1);
+        CNM.setText(CNM1);
+        SYNC.setText(SYNC1);
+        RF.setText(RF1);
+        RIP.setText(RIP1);
+        TMP.setText(TMP1);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        isHidde=true;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     private void findViews() {
-        tv_devicenumber = view.findViewById(R.id.tv_devicenumber);
-        tv_hardware = view.findViewById(R.id.tv_hardware);
-        tv_software = view.findViewById(R.id.tv_software);
-        tv_sn = view.findViewById(R.id.tv_sn);
-        tv_mac = view.findViewById(R.id.tv_mac);
-        tvuboot = view.findViewById(R.id.tvuboot);
-        tvboard = view.findViewById(R.id.tvboard);
 
-        tv_devicenumber.setText(DEVICENUMBER1);
-        tv_hardware.setText(HARDWAREVERSION1);
-        tv_software.setText(SOFTWAREVERSION1);
-        tv_sn.setText(SNNUMBER1);
-        tv_mac.setText(MACADDRESS1);
-        tvuboot.setText(UBOOTVERSION1);
-        tvboard.setText(BOARDTEMPERATURE1);
-        if (!TextUtils.isEmpty(BOARDTEMPERATURE1)) {
-            Double i = Double.parseDouble(BOARDTEMPERATURE1);
+        tv_SN = view.findViewById(R.id.tv_SN);
+        tv_MAC = view.findViewById(R.id.tv_MAC);
+        tv_FW = view.findViewById(R.id.tv_FW);
+        CNM = view.findViewById(R.id.CNM);
+        SYNC = view.findViewById(R.id.SYNC);
+        RF = view.findViewById(R.id.RF);
+        RIP = view.findViewById(R.id.RIP);//测量干扰值
+        TMP = view.findViewById(R.id.TMP);
 
-            tvboard.setText(df2.format(i));
-        }
+
+        tv_SN.setText("");
+        tv_MAC.setText("");
+        tv_FW.setText("");
+        RIP.setText("");
+        RF.setText("");
+        SYNC.setText("");
+        CNM.setText("");
+        TMP.setText("");
+
         //获取设备号
-        view.findViewById(R.id.bt_devicenumber).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.bt_SN).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("111");
-                DeviceUtils.Select(0, 1);//设备号
-
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                tv_SN.setText(CommandUtils.SN);
+                SN1=tv_SN.getText().toString();
             }
         });
         //获取硬件版本号
-        view.findViewById(R.id.bt_hardware).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.bt_MAC).setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("112");
-
-                DeviceUtils.Select(1, 1);//硬件版本
-
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                tv_MAC.setText(CommandUtils.MAC);
+                MAC1=tv_MAC.getText().toString();
             }
         });
 
         //获取软件版本号
-        view.findViewById(R.id.bt_software).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.bt_FW).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("113");
-
-                DeviceUtils.Select(2, 1);//软件版本
-
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                tv_FW.setText(CommandUtils.FW);
+                FW1=tv_FW.getText().toString();
             }
         });
-        //获取SN号
-
-        view.findViewById(R.id.bt_sn).setOnClickListener(new View.OnClickListener() {
+        //同步状态
+//        基站是否同步成功, 0：同步失败 1：同步成功
+        view.findViewById(R.id.bt_SYNC).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("114");
-                DeviceUtils.Select(3, 1);//SN号
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                if(CommandUtils.SYNC.equals("")){
+                    SYNC.setText(CommandUtils.SYNC);
+                }else{
+                    if(Integer.parseInt(CommandUtils.SYNC)==0){
+                        SYNC.setText("同步成功");
+                    }
+                    if(Integer.parseInt(CommandUtils.SYNC)==1){
+                        SYNC.setText("同步失败");
+                    }
+                }
+                SYNC1=SYNC.getText().toString();
             }
         });
-        //获取mac地址
-        view.findViewById(R.id.bt_mac).setOnClickListener(new View.OnClickListener() {
+        //干扰测量值
+        //-1 ：小区未建
+        //<-140: 接收故障
+        //-140< RIP<-90:干扰值正常
+        view.findViewById(R.id.bt_RIP).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("115");
-                DeviceUtils.Select(4, 1);//MAC地址
-
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                if(CommandUtils.RIP.equals("")){
+                    RIP.setText(CommandUtils.RIP);
+                }else{
+                    if(Integer.parseInt(CommandUtils.RIP)==-1){
+                        RIP.setText("小区未建立"+CommandUtils.RIP);
+                    }
+                    if(Integer.parseInt(CommandUtils.RIP)<-140){
+                        RIP.setText("接收故障"+CommandUtils.RIP);
+                    }if(Integer.parseInt(CommandUtils.RIP)>=-140&&Integer.parseInt(CommandUtils.RIP)<=-90){
+                        RIP.setText("干扰值正常("+CommandUtils.RIP+")");
+                    }
+                }
+                RIP1=RIP.getText().toString();
             }
         });
-        //获取uboot版本号
-        view.findViewById(R.id.bt_boot).setOnClickListener(new View.OnClickListener() {
+        //获取射频状态
+        view.findViewById(R.id.bt_RF).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("116");
-
-                DeviceUtils.Select(5, 1);//uboot版本号
-
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                if(CommandUtils.RF.equals("")){
+                    RF.setText(CommandUtils.RF);
+                }else{
+                    if(Integer.parseInt(CommandUtils.RF)==0){//0 关射频  1开启
+                        RF.setText("关闭");
+                    }
+                    if(Integer.parseInt(CommandUtils.RF)==1){//0 关射频  1开启
+                        RF.setText("开启");
+                    }
+                }
+                RF1=RF.getText().toString();
             }
         });
-        //获取板卡温度
+        //空口同步状态
 
-        view.findViewById(R.id.bt_board).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.bt_CNM).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                ToastUtils.showToast("117");
-                DeviceUtils.Select(6, 1);//板卡温度
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                if(CommandUtils.CNM.equals("")){
+                    CNM.setText(CommandUtils.CNM);
+                }else{
+//                    0：未启用
+//                    1：成功
+//                    -1：失败
+
+                    if(Integer.parseInt(CommandUtils.CNM)==0){
+                        CNM.setText("未启用");
+                    }
+                    if(Integer.parseInt(CommandUtils.CNM)==1){
+                        CNM.setText("成功");
+                    }
+                    if(Integer.parseInt(CommandUtils.CNM)==-1){
+                        CNM.setText("失败");
+                    }
+                }
+                CNM1=CNM.getText().toString();
+            }
+        });
+        view.findViewById(R.id.bt_TMP).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(CommandUtils.type.equals("")){
+                    return;
+                }
+                TMP.setText(CommandUtils.TMP);
+                TMP1=TMP.getText().toString();
             }
         });
     }
@@ -190,47 +301,57 @@ public class TextFragment0 extends BaseFragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        Log.d(TAG, "setUserVisibleHint: " + "执行了1"+isVisibleToUser);
+        if(isVisibleToUser&&isHidde){
+            clear();
+            SN1=tv_SN.getText().toString();
+            MAC1=tv_MAC.getText().toString();
+            FW1=tv_FW.getText().toString();
+            RIP1=RIP.getText().toString();
+            CNM1=CNM.getText().toString();
+            RF1=RF.getText().toString();
+            SYNC1=SYNC.getText().toString();
+            TMP1=TMP.getText().toString();
+        }
         if (isVisibleToUser) {
-            // 相当于onResume()方法
-            Log.d(TAG, "onResumeA: " + "执行了1");
-//            tv_devicenumber.setText("");
-//            tv_hardware.setText("");
-//            tv_software.setText("");
-//            tv_sn.setText("");
-//            tv_mac.setText("");
-//            tvuboot.setText("");
-//            initData();
 //            clear();
-//            initView();
-
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    clear();
-                    getData();
-                }
-            }, 100);
-        } else {
-//            clear();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    clear();
-                    getData();
-                }
-            }, 100);
-//            getData();
-            Log.d(TAG, "onResumeA: " + "执行了2");
+//            // 相当于onResume()方法
+////            tv_devicenumber.setText("");
+////            tv_hardware.setText("");
+////            tv_software.setText("");
+////            tv_sn.setText("");
+////            tv_mac.setText("");
+////            tvuboot.setText("");
+////            initData();
+////            clear();
+////            initView();
+//
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    clear();
+//                    getData();
+//                }
+//            }, 100);
+//        } else {
+////            clear();
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    clear();
+//                    getData();
+//                }
+//            }, 100);
+////            getData();
+//            Log.d(TAG, "onResumeA: " + "执行了2");
         }
     }
 
     @Override
     public boolean getUserVisibleHint() {
         boolean userVisibleHint = super.getUserVisibleHint();
-        Log.d(TAG, "onResumeA: " + "执行了" + userVisibleHint);
+        Log.d(TAG, "getUserVisibleHint: " + "执行了" + userVisibleHint);
         return super.getUserVisibleHint();
-
-
     }
 
     @Override
@@ -241,53 +362,28 @@ public class TextFragment0 extends BaseFragment {
     }
 
     private void clear() {
-        tv_devicenumber.setText("");
-        tv_hardware.setText("");
-        tv_software.setText("");
-        tv_sn.setText("");
-        tv_mac.setText("");
-        tvuboot.setText("");
-        tvboard.setText("");
+        tv_SN.setText("");
+        tv_MAC.setText("");
+        tv_FW.setText("");
+        RIP.setText("");
+        CNM.setText("");
+        RF.setText("");
+        SYNC.setText("");
+        TMP.setText("");
     }
 
-    private void getData() {
-        Log.d(TAG, "onResume: " + "执行了2");
-        // 相当于onpause()方法
-//        DeviceUtils.Select(0, 1);//设备号
-//        DeviceUtils.Select(1, 1);//硬件版本
-//        DeviceUtils.Select(2, 1);//软件版本
-//        DeviceUtils.Select(3, 1);//SN号
-//        DeviceUtils.Select(4, 1);//MAC地址
-//        DeviceUtils.Select(5, 1);//uboot版本号
-//        DeviceUtils.Select(6, 1);//板卡温度
-
-
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                tv_devicenumber.setText("");
-//                tv_hardware.setText("");
-//                tv_software.setText("");
-//                tv_sn.setText("");
-//                tv_mac.setText("");
-//                tvuboot.setText("");
-
-                tv_devicenumber.setText(DEVICENUMBER1);
-                tv_hardware.setText(HARDWAREVERSION1);
-                tv_software.setText(SOFTWAREVERSION1);
-                tv_sn.setText(SNNUMBER1);
-                tv_mac.setText(MACADDRESS1);
-                if (!TextUtils.isEmpty(BOARDTEMPERATURE1)) {
-                    Double i = Double.parseDouble(BOARDTEMPERATURE1);
-
-                    tvboard.setText(df2.format(i));
-                }
-                tvuboot.setText(UBOOTVERSION1);
-//                tvboard.setText(BOARDTEMPERATURE1);
-
-                Log.d("delaymillisTAG", "五秒一刷");
-
-//            }
-//        }, 5000);
-    }
+//    private void getData() {
+//
+//                tv_devicenumber.setText(DEVICENUMBER1);
+//                tv_hardware.setText(HARDWAREVERSION1);
+//                tv_software.setText(SOFTWAREVERSION1);
+//                tv_sn.setText(SNNUMBER1);
+//                tv_mac.setText(MACADDRESS1);
+//                if (!TextUtils.isEmpty(BOARDTEMPERATURE1)) {
+//                    Double i = Double.parseDouble(BOARDTEMPERATURE1);
+//
+//                    tvboard.setText(df2.format(i));
+//                }
+//                tvuboot.setText(UBOOTVERSION1);
+//    }
 }

@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">单频便携搜救</string>
-<!--    <string name="app_name2">新版双频定位系统</string>-->
+    <string name="app_name">单频便携</string>
     <string name="activity_title">手动定位</string>
     <string name="activity_saopintitle">扫频定位</string>
     <string name="manually_locate">手动定位</string>

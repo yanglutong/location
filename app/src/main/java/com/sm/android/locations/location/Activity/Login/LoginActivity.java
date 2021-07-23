@@ -132,7 +132,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //        getPermissions();
 //        setUser_pwd();
         gUtil = GPSLocationUtil.getInstance(LoginActivity.this);
-////        ifWifi();
+//        ifWifi();
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -311,6 +311,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.bt_login:
 //
+
+
                 Logins();
 //
                 break;
@@ -322,11 +324,18 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 //        KeyboardUtils.hideSoftInput(LoginActivity.this);
         final String number = et_user.getText().toString();
         final String pwd = et_pwd.getText().toString();
+        if(number.equals("")){
+            ToastUtils.showToast("请输入用户名");
+            return;
+        }if(pwd.equals("")){
+            ToastUtils.showToast("请输入密码");
+            return;
+        }
         if (!TextUtils.isEmpty(number) && !TextUtils.isEmpty(pwd)) {
             if (number.equals("smsbgly") && pwd.equals("smsbgly")) {//权限管理
                 startActivity(new Intent(LoginActivity.this, ConfigsActivity.class));
 //                finish();
-            } else if (number.equals("useradmin") && pwd.equals("useradmin")) {//账号管理
+            } else if (number.equals("admin") && pwd.equals("admin")) {//账号管理
 //                LoadingTrue("正在登陆");
 
                 //输入注册码第一次
@@ -347,7 +356,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                             if (et_jh.getText().toString().equals(MyUtils.getZC())) {
                                 preferences.edit().putBoolean("FIRSTStartzc", false).commit();
 
-                                SharedPreferences userSettings = getSharedPreferences("setting", 0);
+                            SharedPreferences userSettings = getSharedPreferences("setting", 0);
                                 SharedPreferences.Editor editor = userSettings.edit();
                                 editor.putString("name", number);
                                 editor.putString("pwd", pwd);

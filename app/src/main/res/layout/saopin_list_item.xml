@@ -417,6 +417,7 @@
                 android:textSize="20dp" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/iv_tdd"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
@@ -452,6 +453,7 @@
                 android:textSize="20dp" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/iv_fdd"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
@@ -488,6 +490,8 @@
                 android:textSize="20dp" />
 
             <ImageView
+                android:visibility="gone"
+
                 android:id="@+id/iv_lt"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
@@ -523,6 +527,7 @@
                 android:textSize="20dp" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/iv_ds"
                 android:layout_width="15dp"
                 android:layout_height="15dp"

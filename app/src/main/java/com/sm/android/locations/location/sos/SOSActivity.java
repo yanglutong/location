@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.text.DecimalFormat;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +16,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -80,12 +82,19 @@ import com.sm.android.locations.location.Utils.View.LineChartView;
 import com.sm.android.locations.location.Utils.View.MyScrollView;
 import com.sm.android.locations.location.Utils.pop.DLPopItem;
 import com.sm.android.locations.location.Utils.pop.DLPopupWindow;
+import com.sm.android.locations.location.initData.CallBackSetState;
 import com.sm.android.locations.location.initData.CommandUtils;
 import com.sm.android.locations.location.initData.ExecutorServiceUtils;
 import com.sm.android.locations.location.initData.MyLog;
+import com.sm.android.locations.location.initData.MyTTS;
 import com.sm.android.locations.location.initData.MyUtils;
 import com.sm.android.locations.location.initData.PLMN;
 import com.sm.android.locations.location.initData.TCPServer;
+import com.sm.android.locations.location.initData.bean.SaoPBean;
+import com.sm.android.locations.location.initData.bean.SaoPBeanRSRP;
+import com.sm.android.locations.location.initData.bean.YXSaoPBean;
+import com.sm.android.locations.location.initData.dao.DBManagerDevice;
+import com.sm.android.locations.location.initData.dao.DeviceBean;
 import com.sm.android.locations.location.viewpagermain.NewMainPager.update.dingwei.DwUpdate;
 import com.sm.android.locations.location.viewpagermain.NewMainPager.update.dingwei.OpnUpdate;
 import com.sm.android.locations.location.zhenma.ZhenmaFenxiActivity;
@@ -98,6 +107,8 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -117,195 +128,216 @@ import static com.sm.android.locations.location.Activity.Main.MainActivity.SPBEA
 import static com.sm.android.locations.location.Constant.Constant.BOARDTEMPERATURE1;
 import static com.sm.android.locations.location.Constant.Constant.IP1;
 import static com.sm.android.locations.location.Constant.Constant.IP2;
-import static com.sm.android.locations.location.Constant.Constant.SHUAIJIAN1;
 import static com.sm.android.locations.location.Utils.MainUtils.MainUtils.DS;
 import static com.sm.android.locations.location.Utils.MainUtils.MainUtils.i;
 import static com.sm.android.locations.location.Utils.MainUtils.MainUtils.location;
 import static com.sm.android.locations.location.Utils.MainUtils.MainUtils2.toIMSI;
+import static com.sm.android.locations.location.initData.CommandUtils.imsilist;
+import static com.sm.android.locations.location.initData.CommandUtils.type;
+import static com.sm.android.locations.location.initData.CommandUtils.type0102;
 import static com.sm.android.locations.location.sos.C.ContantSOS.soslayout;
 import static com.sm.android.locations.location.sos.MubiaopSOS.ZMBEANGKTONGJILISTCALL;
 import static com.sm.android.locations.location.viewpagermain.Fragment.SendUtils.setzy;
 
-public class SOSActivity extends Activity implements View.OnClickListener, SOSVIEW.View {
+public class SOSActivity extends Activity implements View.OnClickListener, SOSVIEW.View, CallBackSetState {
+    private String imsi="";//切换上报的imsi
+    private String shePin="";
     // TTS对象
     private TextToSpeech mTextToSpeech;
     String gongw="连接成功第一次获取公网参数";
-    public static String gongWang="";
-    boolean isBs=true;
     String syns="";//发送回来的报文内容
-    String type="";//连接成功返回的报文
     int len=0;
     List<Integer> listsize=new ArrayList<>();
     List<ZmBean> zmBeanscontains=new ArrayList<>();
     LinearLayoutManager linearLayoutManager = null;
+
+    private String log="";
     /*1 代表接收基站的消息  2 代表我向基站发送的消息 3 代表当前连接状态*///接收tcpServer的每一次的消息内容
-    Handler handlerMsg = new Handler() {
+    final Handler handlerMsg = new Handler() {
+        @SuppressLint({"HandlerLeak", "SetTextI18n"})
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case 1:{//接收基站发送给我的消息内容(已转换成字符串utf-8)
-//                    if(msg.obj.toString()!=null&&tv1_type_dw.getText().toString().equals("当前状态: ")){
-////                        ToastUtils.showToast("当前状态设置");
-//                        tv1_type_dw.setText("当前状态：在线");
-//                    }
-//设置语音播报
+                case 1: {//接收基站发送给我的消息内容(已转换成字符串utf-8)
+                    type = msg.obj.toString();
 
+                    log=msg.obj.toString();
 
 
                     break;
                 }
-                case 2:{
-                    MyLog.e("msg2", "向基带板发送命令-----"+msg.obj.toString()+"杨路通");//我向基带板发送的指令
-                    break;}
-                case 3:{
-                    if(msg.obj.toString().equals("连接成功")){
-                        type=msg.obj.toString(); //连接成功标识
+                case 2: {
+                    MyLog.e("msg2", "向基带板发送命令-----" + msg.obj.toString() + "杨路通");//我向基带板发送的指令
+                    break;
+                }
+                case 3: {
+                    if (msg.obj.toString().equals("连接成功")) {
+                        type = msg.obj.toString(); //连接成功标识
                         Toast.makeText(context, "连接成功", Toast.LENGTH_SHORT).show();
-                        if(gongw.equals("连接成功第一次获取公网参数")){
+
+                        if(!CommandUtils.MODE.equals("")){//初始化制式
+                            if(Integer.parseInt(CommandUtils.MODE)==1){
+                                tf1="TDD";
+
+                            }
+                            if(Integer.parseInt(CommandUtils.MODE)==2){
+                                tf1="FDD";
+                            }
+                        }
+                        if (!type.equals("")) {
+
+                            CommandUtils.sbZt = "就绪";//连接成功设备为就绪
+                        }
+                        if (gongw.equals("连接成功第一次获取公网参数")) {
                             socketTcpServer.sendPost(CommandUtils.getPublicParameters());
                         }
+                        //连接成功关闭射频
+                        socketTcpServer.sendPost(CommandUtils.getRF(0));
                     }
-                    break;}
-                case 0202:{
-                    if(msg.obj.toString()!=null);syns=msg.obj.toString();
-                    if(syns.contains("02020")){//代表参数下发成功
-                        ToastUtils.showToast("参数下发成功");
-                        ExecutorServiceUtils.scheduledThreadPool.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                socketTcpServer.sendPost(CommandUtils.getPublicParameters());//验证并建立小区
-                            }
-                        }, 20, TimeUnit.SECONDS);
-                    }
-                    if(syns.contains("02021")){
-                        ToastUtils.showToast("参数下发失败");
-                    }
-                    break;}
-                case 0207:{//0208  获取公网参数
-                    if(msg.obj.toString()!=null);
-                    syns=msg.obj.toString();
-
-                    if(gongw.equals("连接成功第一次获取公网参数")){
-                        //保存TddFdd模式
-                        if(syns.contains("MODE:1")){//TDD
-                            gongWang="TDD";
-                        }else if(syns.contains("MODE:2")){//FDD
-                            gongWang="FDD";
-                        }
-                        gongw="";
-                    }else{
-                        //保存TddFdd模式
-                        if(syns.contains("MODE:1")){//TDD
-                            gongWang="TDD";
-                        }else if(syns.contains("MODE:2")){//FDD
-                            gongWang="FDD";
-                        }
-                        if(syns.contains("0208")){//获取公网参数成功
-                            MyLog.e("0208", "保存的设置参数"+PLMN.getPlmns().get(0).toString());
-                            if(syns.contains(PLMN.getPlmns().get(0).getBand())&&syns.contains(PLMN.getPlmns().get(0).getPlmn())&&
-                                    syns.contains(PLMN.getPlmns().get(0).getPci())&&syns.contains(PLMN.getPlmns().get(0).getTac())&&
-                                    syns.contains(PLMN.getPlmns().get(0).getCid())&&syns.contains(PLMN.getPlmns().get(0).getUp())&&
-                                    syns.contains(PLMN.getPlmns().get(0).getDown())){
-                                ToastUtils.showToast("小区建立成功了");
-                                //小区建立成功后设置定位模式
-                                socketTcpServer.sendPost(CommandUtils.getLocateMode(3));//设置定位模式
-                            }
-                        }
-                    }
-
-
-
-                break;
+                    break;
                 }
-                case 0226:{
-                    if(msg.obj.toString()!=null);
-                    syns=msg.obj.toString();
-                    if(syns.contains("02260")){//代表切换定位模式成功
-                        ToastUtils.showToast("设定定位模式成功");
-                        socketTcpServer.sendPost(CommandUtils.getBlackList());//下发黑名单
-                    }else{
-                        ToastUtils.showToast("切换定位模式失败");
+                case 0202: {
+                    if (msg.obj.toString() != null);
+                    syns = msg.obj.toString();
+                    if (syns.contains("02020")) {
+                        //代表参数下发成功
+                        if (type0102.equals("设备设置")) {//如果是设备设置的话 走这里
+                            ToastUtils.showToast("保存成功");
+                            Set1StatusBar("设备参数设置成功");
+                        } else {
+                            Set1StatusBar("小区参数下发成功");
+                            Set1StatusBar("设备启动中");
+                            CommandUtils.sbZt = "启动中";//启动设备
+
+                            timer = new Timer();
+                            timer.schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    socketTcpServer.sendPost(CommandUtils.getPublicParameters());//验证并建立小区
+                                }
+                            }, 20000);
+                        }
+                        type0102 = "";
                     }
-                break;}
-                case 0210:{
-                    if(msg.obj.toString()!=null);
-                    syns=msg.obj.toString();
-                    if(syns.contains("02100")){//代表下发黑名单成功
-                        ToastUtils.showToast("下发黑名单成功");
-                        socketTcpServer.sendPost(CommandUtils.setLocationImsI(CommandUtils.imsilist.get(0)));//设置报号值
-                    }else {
+                    if (syns.contains("02021")) {
+                        Set1StatusBar("小区参数下发失败");
+                    }
+                    break;
+                }
+                case 0207: {//0208  获取公网参数
+                    if (msg.obj.toString() != null) ;
+                    syns = msg.obj.toString();
+                    if (CommandUtils.gwCan.equals("获取公网")) {
+                        CommandUtils.gwCan = "";
+                        return;
+                    }
+                    if (gongw.equals("连接成功第一次获取公网参数")) {
+                        gongw = "";
+                    } else {
+                        if (syns.contains("0208")) {//获取公网参数成功
+                            if (PLMN.getPlmns().size() > 0) {
+                                if (syns.contains(PLMN.getPlmns().get(0).getBand()) && syns.contains(PLMN.getPlmns().get(0).getPlmn()) &&
+                                        syns.contains(PLMN.getPlmns().get(0).getPci()) && syns.contains(PLMN.getPlmns().get(0).getTac()) &&
+                                        syns.contains(PLMN.getPlmns().get(0).getCid()) && syns.contains(PLMN.getPlmns().get(0).getUp()) &&
+                                        syns.contains(PLMN.getPlmns().get(0).getDown())) {
+//                                ToastUtils.showToast("小区建立成功了");
+                                    Set1StatusBar("小区建立成功了");
+                                    //小区建立成功后设置定位模式
+                                    socketTcpServer.sendPost(CommandUtils.getLocateMode(3));//设置定位模式
+                                }
+                            }
+                        }
+                    }
+                    break;
+                }
+                case 0226: {
+                    if (msg.obj.toString() != null) ;
+                    syns = msg.obj.toString();
+                    if (syns.contains("02260")) {//代表切换定位模式成功
+//                        ToastUtils.showToast("设定定位模式成功");
+                        Set1StatusBar("设定定位模式成功");
+                        socketTcpServer.sendPost(CommandUtils.getBlackList());//下发黑名单
+                    } else {
+                        Set1StatusBar("设定定位模式失败");
+                    }
+                    break;
+                }
+                case 0210: {
+                    if (msg.obj.toString() != null) ;
+                    syns = msg.obj.toString();
+                    if (syns.contains("02100")) {//代表下发黑名单成功
+                        Set1StatusBar("设置定位黑名单成功");
+                        socketTcpServer.sendPost(CommandUtils.setLocationImsI(imsilist.get(0)));//设置报号值
+                    } else {
+                        Set1StatusBar("下发黑名单失败");
                         ToastUtils.showToast("下发黑名单失败");
                     }
-                break;}
-                case 0236:{//报号值
-                    if(msg.obj.toString()!=null);
-                    syns=msg.obj.toString();
-                    if(syns.contains("02360")){//代表设置报号值成功
-                        ToastUtils.showToast("定位指定IMSI成功");
+                    break;
+                }
+                case 0236: {//报号值
+                    if (msg.obj.toString() != null) ;
+                    syns = msg.obj.toString();
+                    if (syns.contains("02360")) {//代表设置报号值成功
+                        if (!imsi.equals("")) {
+                            Set1StatusBar("设置目标IMSI" + imsi);
+                        } else {
+                            if (imsilist.size() > 0) {
+                                String s = imsilist.get(0);
+                                Set1StatusBar("设置目标IMSI" + s);
+                            } else {
+                                Set1StatusBar("设置目标IMSI");
+                            }
+                        }
                         socketTcpServer.sendPost(CommandUtils.getRF(1));//开射频
-                    }else{
-                        ToastUtils.showToast("设置报号值失败");
+                    } else {
+                        Set1StatusBar("设置目标IMSI失败");
                     }
-                break;}
-                case 0204:{//射频
-                    if(msg.obj.toString()!=null);
-                    syns=msg.obj.toString();
-                    if(syns.contains("02040")){//代表下发射频命令成功
-                        if(CommandUtils.RF_STATE==0){//代表是关闭操作
-                            ToastUtils.showToast("射频关闭");
+                    break;
+                }
+                case 0204: {//射频
+                    if (msg.obj.toString() != null) ;
+                    syns = msg.obj.toString();
+                    if (syns.contains("02040")) {//代表下发射频命令成功
+                        if (CommandUtils.RF_STATE == 0) {//代表是关闭操作
+                            shePin = "关闭";
+                            Set1StatusBar("射频关闭");
+//                            ToastUtils.showToast("射频关闭");
                             //射频关闭后将被定位中的imsi列表重新设置默认离线状态
-                             ImslList();
-                             //展示的imsi号清空
+                            ImslList();
+                            //展示的imsi号清空
                             tv_imsi1_dw.setText("");
-                             isBs=false;
+                            //能量值清空
+                            tv_sb1_jl_dw.setText("");
+
+
+                            CommandUtils.sbZt = "就绪";//关闭射频为就绪状态
+
                         }
-                        if(CommandUtils.RF_STATE==1){
-                            sbZhuangTai="就绪状态";
-                            isBs=true;
-                            ToastUtils.showToast("射频打开");
+                        if (CommandUtils.RF_STATE == 1) {
+                            //射频开启后代表开始定位
+                            CommandUtils.sbZt = "定位中";//射频开启为定位中
+                            Set1StatusBar("设备定位中");
+                            shePin = "开启";
+                            Set1StatusBar("射频开启");
+//                            ToastUtils.showToast("射频打开");
                         }
-                    }else if(syns.contains("02041")){
-                        ToastUtils.showToast("射频");
+                    } else if (syns.contains("02041")) {
+                        Set1StatusBar("射频开启或者关闭失败");
                     }
-                break;}
-                case 0303:{//被定位的imsi
-                    if(msg.obj.toString()!=null)
-                                    if(isBs){
-                                        ImslList0303(msg.obj.toString());//获取的imsi和数据库里对比是哪个
-                                    }
-
-                        String s = msg.obj.toString();
-                        String f = s.substring(48);//获取的 消息内容
-
-                        MyLog.e("ttt", f + "\r\n");
-                        String[] imsi = f.split("IMSI:");
-                        String ims = imsi[1].substring(0, 15);
-                        Log.e("ttt", "IMSI号为: " + ims);
-
-                        String[] time = f.split("TIME:");
-                        String tim = time[1].substring(0, 10);
-                        MyLog.e("ttt", tim);
-
-                        String[] RSSI = f.split("RSSI:");
-                        String rssi = RSSI[1].substring(0, 5);
-                        rssi = com.sm.android.locations.location.initData.MyUtils.getNumber(rssi);
-                        MyLog.e("ttt", rssi);
-
-
-
-
-                        //设置定位的imsi号
-                        tv_imsi1_dw.setText(ims);
-                        //设置曲线图
-                        list1quxian.remove(0);
-                        list1quxian.add(Integer.parseInt(rssi));
-                        setqxData(list1quxian, list2quxian);
-
-
-                    //当0303发完消息后通知射频关闭
-                break;}
-                case 0302:{//被采集中的IMSI
+                    break;
+                }
+                case 0303: {//被定位的imsi
+                    if (msg.obj.toString() != null)
+                        if(!shePin.equals("关闭")){//如果射频关闭立即不接收消息
+                            CommandUtils.type0303 = msg.obj.toString();
+                        }
+                    break;
+                }
+                case 0302: {//被采集中的IMSI
 //                        //将数据设置到imsi上
+                    //设置侦码记录条数
+                    zmListsize.add(msg.obj.toString());
+                    tv_searchNumdw.setText("(" + zmListsize.size() + ")");
                     String s = msg.obj.toString();
                     String f = s.substring(48);//获取的 消息内容
 
@@ -313,29 +345,483 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                     String[] imsi = f.split("IMSI:");
                     String ims = imsi[1].substring(0, 15);
                     Log.e("ttt", "IMSI号为: " + ims);
-                        if(linearLayoutManager==null){
-                            linearLayoutManager = new LinearLayoutManager(context);
-                        }
-                        linearLayoutManager.setStackFromEnd(false);//recyview显示最底部一条
-                        ry_zhenma_dw.setLayoutManager(linearLayoutManager);
+                    listIMSI.add(ims);
+                    if (linearLayoutManager == null) {
+                        linearLayoutManager = new LinearLayoutManager(context);
+                    }
+//                    linearLayoutManager.setStackFromEnd(true);//滑动到底部
 
-                        zmBeanscontains.add(new ZmBean(ims, "1", "123", new SimpleDateFormat("HH:mm:ss").format(new Date())+"", new SimpleDateFormat("HH:mm:ss").format(new Date())+"", "下行", "123", len++));
-                        zmBeanscontains=com.sm.android.locations.location.initData.MyUtils.removeDuplicate(zmBeanscontains);
+                    ry_zhenma_dw.setLayoutManager(linearLayoutManager);
 
-                        for (int j = 1; j <zmBeanscontains.size()+1 ; j++) {
-                            listsize.add(j);
+                    zmBeanscontains.add(new ZmBean(ims, "1", "123", new SimpleDateFormat("HH:mm:ss").format(new Date()) + "", new SimpleDateFormat("HH:mm:ss").format(new Date()) + "", CommandUtils.DLARFCN, "123", len++));
+//                        zmBeanscontains=com.sm.android.locations.location.initData.MyUtils.removeDuplicate(zmBeanscontains);
+
+                    //1 2 3 4 5  5 4 3 2 1
+
+
+                    listsize.clear();
+                    for (int j = 1; j < zmBeanscontains.size() + 1; j++) {
+                        listsize.add(j);
+                    }
+                    ryZmAdapterdw = new RyZmAdapterdw(SOSActivity.this, zmBeanscontains, listsize);//list是imsi列表选中的数据
+                    ry_zhenma_dw.setAdapter(ryZmAdapterdw);
+                    linearLayoutManager.scrollToPositionWithOffset(ryZmAdapterdw.getItemCount() - 1, Integer.MIN_VALUE);//让最后一条显示出来 如果想永远显示最后一条请设置布局高度自适应
+
+                    DBManagerZM dbManagerZM = null;
+                    try {
+                        dbManagerZM = new DBManagerZM(SOSActivity.this);
+                        dbManagerZM.deleteall();
+                        if (zmBeanscontains.size() > 0) {
+                            for (int i = 0; i < zmBeanscontains.size(); i++) {
+                                dbManagerZM.insertAddZmBean(zmBeanscontains.get(i));
+                            }
                         }
-                        ryZmAdapterdw = new RyZmAdapterdw(SOSActivity.this, zmBeanscontains, listsize);//list是imsi列表选中的数据
-                        ry_zhenma_dw.setAdapter(ryZmAdapterdw);
+                        List<ZmBean> zmBeanList = dbManagerZM.getDataAll();
+                        Log.i("数据库数据", "handleMessage: " + zmBeanList.toString());
+
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                case 0305:{//获取扫描最优频点
+                    if(msg.obj.toString()!=null){
+                        if(CommandUtils.spbuilsshow){
+                            if(msg.getData().getString("type").contains("0201")){
+                                list0201=new ArrayList<>();
+                                SaoPBeanRSRP saoPBeanRSRP;
+                                String[] strings = msg.obj.toString().split("\r\n");
+                                for (String string : strings) {//长串
+                                    saoPBeanRSRP= new SaoPBeanRSRP();
+                                    MyLog.e("0201", string);
+                                    MyLog.e("0201", "-------------------");
+
+                                    String[] split = string.split("\t");
+                                    for (String s : split) {
+                                        MyLog.e("0201E", s);
+                                        if(s.contains("EARFCN:")){
+                                            if(s.contains("0201EARFCN")){
+                                                String[] split1 = s.split("0201");
+                                                saoPBeanRSRP.setEARFCN(split1[1].split(":")[1]);
+                                            }else{
+                                                saoPBeanRSRP.setEARFCN(s.split(":")[1]);
+                                            }
+                                        }
+                                        if(s.contains("RSRP:")){
+                                            saoPBeanRSRP.setRSRP(s.split(":")[1]);
+                                        }
+                                    }
+                                    if(saoPBeanRSRP.getEARFCN()!=null&&saoPBeanRSRP.getRSRP()!=null){
+                                        list0201.add(saoPBeanRSRP);
+                                    }
+                                }
+                                Log.i("0201handleMessage", "handleMessage: "+list0201.toString());
+                            }
+
+                            if(msg.getData().getString("type").contains("0305")){
+                                list=new ArrayList<>();//初始化
+                                SaoPBean bean;
+                                String[] strings = msg.obj.toString().split("\r\n");
+                                for (String string : strings) {//长串
+                                    bean= new SaoPBean();
+                                    MyLog.e("0305F", string);
+                                    MyLog.e("0305F", "-------------------");
+
+                                    String[] split = string.split("\t");
+                                    for (String s : split) {
+                                        MyLog.e("0305E", s);
+                                        if(s.contains("EARFCN:")){
+                                            if(s.contains("0305EARFCN")){
+                                                String[] split1 = s.split("0305");
+                                                bean.setEARFCN(split1[1].split(":")[1]);
+                                            }else{
+                                                bean.setEARFCN(s.split(":")[1]);
+                                            }
+                                        }
+                                        if(s.contains("PRI:")){
+                                            bean.setPRI(s.split(":")[1]);
+                                        }
+                                    }
+                                    if(bean.getEARFCN()!=null&&bean.getPRI()!=null){
+                                        list.add(bean);
+                                    }
+                                }
+                                Log.i("0305handleMessage", "handleMessage: "+list.toString());
+                            }
+                            MyLog.i("jkljkl", "123456");
+                            //两个都有数据后
+                            if(list!=null&&list0201!=null){
+                                if(list0201.size()>0&&list.size()>0){
+                                    CommandUtils.sbZt="就绪";
+                                    Set1StatusBar("扫频完成");
+                                    if(yXList==null){
+                                        yXList=new ArrayList<>();
+                                    }else{
+                                        yXList.clear();
+                                    }
+                                    MyLog.e("aaalist0201", "0201"+list0201.toString());
+                                    MyLog.e("aaalist0201", "0305"+list.toString()+"\r\n\r\n");
+                                    for (int i1 = 0; i1 < list.size(); i1++) {//0305
+                                        SaoPBean bean = list.get(i1);
+                                        MyLog.e("aaalist", "list0305下行频点"+bean.getEARFCN());
+                                        MyLog.e("aaalist", "-------------------");
+                                        for (int i2 = 0; i2 < list0201.size(); i2++) {//0201
+                                            if(bean.getEARFCN().equals(list0201.get(i2).getEARFCN())){//03050201里有相同的频点
+                                                yXList.add(new YXSaoPBean(Integer.parseInt(bean.getPRI()), Integer.parseInt(list0201.get(i2).getRSRP()),bean.getEARFCN()));
+                                            }else{
+                                            }
+                                        }
+                                    }
+                                    MyLog.e("aaalist0201", "频点优先级"+yXList.toString()+"\r\n\r\n");
+                                    if(yXList.size()>0){//扫描到频点后开始展示列表
+//                                        ToastUtils.showToast("频点扫描完成");
+                                        Set1StatusBar("频点扫描完成");
+                                        xqck.clear();
+                                        SpBean spBean;
+                                        for (YXSaoPBean yxSaoPBean : yXList) {
+                                              spBean = new SpBean();
+                                              if(yxSaoPBean.getEARFCN().equals("37900")){
+                                                  spBean.setBand("38");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                  spBean.setCid("");
+                                                  spBean.setPci(0);
+                                                  spBean.setPriority(0);
+                                                  spBean.setRsrq(0);
+                                                  spBean.setTac(0);
+                                                  spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("38098")){
+                                                  spBean.setBand("38");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("38400")){
+                                                  spBean.setBand("39");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("38544")){
+                                                  spBean.setBand("39");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("38950")){
+                                                  spBean.setBand("40");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("40936")){
+                                                  spBean.setBand("41");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("1300")){
+                                                  spBean.setBand("3");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("3683")){
+                                                  spBean.setBand("8");
+                                                  spBean.setPlmn("46000");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("375")){
+                                                  spBean.setBand("1");
+                                                  spBean.setPlmn("46001");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("1650")){
+                                                  spBean.setBand("3");
+                                                  spBean.setPlmn("46001");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("100")){
+                                                  spBean.setBand("1");
+                                                  spBean.setPlmn("46011");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("1825")){
+                                                  spBean.setBand("3");
+                                                  spBean.setPlmn("46011");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("1850")){
+                                                  spBean.setBand("3");
+                                                  spBean.setPlmn("46011");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }if(yxSaoPBean.getEARFCN().equals("2452")){
+                                                  spBean.setBand("5");
+                                                  spBean.setPlmn("46011");
+                                                  spBean.setRsrp(yxSaoPBean.getRSRP());
+                                                  spBean.setDown(yxSaoPBean.getEARFCN());
+                                                spBean.setCid("");
+                                                spBean.setPci(0);
+                                                spBean.setPriority(0);
+                                                spBean.setRsrq(0);
+                                                spBean.setTac(0);
+                                                spBean.setUp(yxSaoPBean.getEARFCN());
+                                              }
+                                              if(spBean.getDown()!=null&&spBean.getUp()!=null){
+                                                  xqck.add(spBean);
+                                              }
+                                        }
+
+                                        MyLog.e("下行频点0305", xqck.toString());
+                                        xqck = com.sm.android.locations.location.Utils.MyUtils.removeDd(xqck);
+                                        Intent intent = new Intent(context, SaoPinActivity.class);
+                                        intent.putExtra("type", "3");
+                                        startActivity(intent);
+
+
+                                    }else{//如果没有的话就看0305优先级 优先级最高的选择默认一个
+                                        Set1StatusBar("扫描不到频点");
+                                        ToastUtils.showToast("扫描不到频点");
+                                    }
+                                }
+                            }
+                        }else{
+                            if(msg.getData().getString("type").contains("0201")){
+                                list0201=new ArrayList<>();
+                                SaoPBeanRSRP saoPBeanRSRP;
+                                String[] strings = msg.obj.toString().split("\r\n");
+                                for (String string : strings) {//长串
+                                    saoPBeanRSRP= new SaoPBeanRSRP();
+                                    MyLog.e("0201", string);
+                                    MyLog.e("0201", "-------------------");
+
+                                    String[] split = string.split("\t");
+                                    for (String s : split) {
+                                        MyLog.e("0201E", s);
+                                        if(s.contains("EARFCN:")){
+                                            if(s.contains("0201EARFCN")){
+                                                String[] split1 = s.split("0201");
+                                                saoPBeanRSRP.setEARFCN(split1[1].split(":")[1]);
+                                            }else{
+                                                saoPBeanRSRP.setEARFCN(s.split(":")[1]);
+                                            }
+                                        }
+                                        if(s.contains("RSRP:")){
+                                            saoPBeanRSRP.setRSRP(s.split(":")[1]);
+                                        }
+                                    }
+                                    if(saoPBeanRSRP.getEARFCN()!=null&&saoPBeanRSRP.getRSRP()!=null){
+                                        list0201.add(saoPBeanRSRP);
+                                    }
+                                }
+                                Log.i("0201handleMessage", "handleMessage: "+list0201.toString());
+                            }
+
+                            if(msg.getData().getString("type").contains("0305")){
+                                list=new ArrayList<>();//初始化
+                                SaoPBean bean;
+                                String[] strings = msg.obj.toString().split("\r\n");
+                                for (String string : strings) {//长串
+                                    bean= new SaoPBean();
+                                    MyLog.e("0305F", string);
+                                    MyLog.e("0305F", "-------------------");
+
+                                    String[] split = string.split("\t");
+                                    for (String s : split) {
+                                        MyLog.e("0305E", s);
+                                        if(s.contains("EARFCN:")){
+                                            if(s.contains("0305EARFCN")){
+                                                String[] split1 = s.split("0305");
+                                                bean.setEARFCN(split1[1].split(":")[1]);
+                                            }else{
+                                                bean.setEARFCN(s.split(":")[1]);
+                                            }
+                                        }
+                                        if(s.contains("PRI:")){
+                                            bean.setPRI(s.split(":")[1]);
+                                        }
+                                    }
+                                    if(bean.getEARFCN()!=null&&bean.getPRI()!=null){
+                                        list.add(bean);
+                                    }
+                                }
+                                Log.i("0305handleMessage", "handleMessage: "+list.toString());
+                            }
+                            MyLog.i("jkljkl", "123456");
+                            //两个都有数据后
+                            if(list!=null&&list0201!=null){
+                                if(list0201.size()>0&&list.size()>0){
+                                    CommandUtils.sbZt="启动中";
+                                    Set1StatusBar("设备启动中");
+                                    if(yXList==null){
+                                        yXList=new ArrayList<>();
+                                    }else{
+                                        yXList.clear();
+                                    }
+                                    MyLog.e("aaalist0201", "0201"+list0201.toString());
+                                    MyLog.e("aaalist0201", "0305"+list.toString()+"\r\n\r\n");
+                                    for (int i1 = 0; i1 < list.size(); i1++) {//0305
+                                        SaoPBean bean = list.get(i1);
+                                        MyLog.e("aaalist", "list0305下行频点"+bean.getEARFCN());
+                                        MyLog.e("aaalist", "-------------------");
+                                        for (int i2 = 0; i2 < list0201.size(); i2++) {//0201
+                                            if(bean.getEARFCN().equals(list0201.get(i2).getEARFCN())){//03050201里有相同的频点
+                                                yXList.add(new YXSaoPBean(Integer.parseInt(bean.getPRI()), Integer.parseInt(list0201.get(i2).getRSRP()),bean.getEARFCN()));
+                                            }else{
+                                                MyLog.e("aaalist0201", "频点优先级"+yXList.toString()+"\r\n\r\n");
+                                                MyLog.e("aaalist0201", "频点优先级"+"\r\n\r\n");
+                                            }
+                                        }
+                                    }
+                                    if(yXList.size()>0){//此频点存储起来优先级和场强 如果一个就选择这一个 如果多个进行比较
+                                        MyLog.e("aaalist", "yxlist:"+yXList.toString());
+                                        if(yXList.size()==1){
+//                                        选择这一个频点进行建立
+//                                        最优的频点建立小区
+                                            if(socketTcpServer!=null){
+                                                if(!type.equals("")){
+                                                    MyLog.e("扫频完成开始建立小区","优先级和能量值 单个"+yXList.get(0).getEARFCN()+"--"+yXList.toString());
+                                                    presenter.startSaoPin(1, type, context, yXList.get(0).getEARFCN(), SOSActivity.sbZhuangTai,tv1_wifi_dw.getText().toString(),socketTcpServer);
+                                                    Set1StatusBar("扫频完成开始建立小区");
+                                                }
+                                            }
+                                        }else{
+                                            //将这多个频点进行比较优先级和能量值
+                                            ArrayList<YXSaoPBean> saoP=null;
+                                            if(saoP==null){
+                                                saoP=new ArrayList<>();
+                                            }
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                                yXList.sort(Comparator.comparing(YXSaoPBean::getPRI).thenComparing(YXSaoPBean::getRSRP));//能量值和场强最高的排到后
+                                            }
+                                            MyLog.e("aaalist","能量值和优先级排序后---"+yXList.toString());
+                                            //最优的频点建立小区
+                                            if(socketTcpServer!=null){
+                                                if(!type.equals("")){
+                                                    MyLog.e("扫频完成开始建立小区","优先级和能量值 多个"+yXList.get(0).getEARFCN()+"--"+yXList.toString());
+                                                    presenter.startSaoPin(1, type, context, yXList.get(yXList.size()-1).getEARFCN(), SOSActivity.sbZhuangTai,tv1_wifi_dw.getText().toString(),socketTcpServer);
+                                                    Set1StatusBar("扫频完成开始建立小区");
+                                                }
+                                            }
+                                        }
+                                    }else{//如果没有的话就看0305优先级 优先级最高的选择默认一个
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                                            list.sort(Comparator.comparing(SaoPBean::getPRI));
+                                            //最优的频点建立小区
+                                            if(socketTcpServer!=null){
+                                                if(!type.equals("")){
+                                                    MyLog.e("扫频完成开始建立小区","只有0305优先级"+list.toString());
+                                                    presenter.startSaoPin(1, type, context, list.get(list.size()-1).getEARFCN(), SOSActivity.sbZhuangTai,tv1_wifi_dw.getText().toString(),socketTcpServer);
+                                                    Set1StatusBar("扫频完成开始建立小区");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+
+
+
+                        }
+
+                    }
                     break;
                 }
             }
         }
     };
+    //监听手机返回键
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return false;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+    //集合存储扫频列表0305
+    private List<SaoPBean> list;
+    private List<SaoPBeanRSRP> list0201;
+    public static List<SpBean> xqck = new ArrayList<>();
+    //最优的频点0305
+    private List<YXSaoPBean> yXList;
     //用于建立基带板的长链接
-    TCPServer socketTcpServer;
+    public static TCPServer socketTcpServer;
+    //创建侦码集合长度
+    private ArrayList<String> zmListsize=new ArrayList<>();
     public static String str;
-
+    private Timer timer0303;
+    private Timer timerlistImsi;
 
     public void startSocket() {
         socketTcpServer.isRun = true;
@@ -349,6 +835,9 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         MyLog.i("", "Socket已终止");
     }
 
+
+
+    public static int zy=0;
     private Context context;
     SOSVIEW.MainPresenter presenter;//全局监听
     //功能flag
@@ -467,14 +956,14 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     private TextToSpeech textToSpeech = null;//创建自带语音对象
     StringBuffer stringBuffer1dw = null;
     StringBuffer stringBuffer2dw = null;
-    private boolean slideButton1Flag = true;
+    private boolean slideButton1Flag = false;
     private boolean slideButton2Flag = true;
     ArrayAdapter<String> adapter1, adapter2;
     List<String> listsSp = new ArrayList<>();
     private String spinnerS1 = "", spinnerS2 = "";
     Message message;
     Bundle bundle;
-    private static Timer timer1, timer2, timer_wendu;
+    private static Timer timer_wendu;
     DatagramPacket dp;
     byte[] buf;
     public static boolean FENGSHANFLAG = true;
@@ -498,7 +987,7 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     private boolean sb2FirstFlag = false;
     private boolean TIMERRESTARTFLAG1 = true;  //是否重启完成1  若重启完 true
     private boolean TIMERRESTARTFLAG2 = true;  //是否重启完成1  若重启完 true
-    private Timer timer = null;//11秒一次imsi列表更新
+    private Timer timer = null;
     private Timer timerLocation = null;//五秒一次imsi列表更新
     RyZmAdapterdw ryZmAdapterdw;
     @SuppressLint("NewApi")
@@ -574,7 +1063,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                         dialog.cancel();
                     }
                 });
-
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.setContentView(inflate);
                 //获取当前Activity所在的窗体
@@ -677,18 +1165,17 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-
-                case 100:
-                    if (!TextUtils.isEmpty(SHUAIJIAN1)) {
-                        Double XS = Double.parseDouble(SHUAIJIAN1);
-//                    int XS = 12;
-                        double v = (33 - (XS * 0.25)) * 0.1;
-                        double pow = Math.pow(10, v);
-                        double v1 = pow / 1000;
-                        Log.d("nzqtag", "run: " + v1);
-                        java.text.DecimalFormat df = new java.text.DecimalFormat("#.00");
-                    }
-                    break;
+//                case 100:
+//                    if (!TextUtils.isEmpty(SHUAIJIAN1)) {
+//                        Double XS = Double.parseDouble(SHUAIJIAN1);
+////                    int XS = 12;
+//                        double v = (33 - (XS * 0.25)) * 0.1;
+//                        double pow = Math.pow(10, v);
+//                        double v1 = pow / 1000;
+//                        Log.d("nzqtag", "run: " + v1);
+//                        java.text.DecimalFormat df = new java.text.DecimalFormat("#.00");
+//                    }
+//                    break;
                 case 8153://接受板卡温度目前只接受53 板卡温度为准
                     DecimalFormat df2;
                     df2 = new DecimalFormat("####");
@@ -697,40 +1184,36 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                     }
                     OpnUpdate.upwendu(tv_wendu, iv_wendu, BOARDTEMPERATURE1, df2, context, iv_fengshan, FENGSHANFLAG);
                     break;
-                case 300002:
-                    tv_imsi1_dw.setText("");
-                    tv_sb1_jl_dw.setText("");
-                    tv_imsi2_dw.setText("");
-                    tv_sb2_jl_dw.setText("");
-                    tv_sb2_jl_dw.setText("");
-                    break;
+//                case 300002:
+//                    tv_imsi1_dw.setText("");
+//                    tv_sb1_jl_dw.setText("");
+//                    tv_imsi2_dw.setText("");
+//                    tv_sb2_jl_dw.setText("");
+//                    tv_sb2_jl_dw.setText("");
+//                    break;
                 case 100001://wifi状态
-//                    if (ViewTYPE == 1) {
-                        if(gongWang.equals("TDD")){
-                            tv1_td_dw.setText("双工模式: TDD");
+                        //设置双工模式
+                    if(!type.equals("")) {//连接中
+                        mode=CommandUtils.MODE;
+                        if (!mode.equals("")) {
+                            if (mode.equals("1")) {
+                                tv1_td_dw.setText("双工模式：TDD");
+                            }
+                            if (mode.equals("2")) {
+                                tv1_td_dw.setText("双工模式：FDD");
+                            }
                         }
-                        if(gongWang.equals("FDD")){
-                            tv1_td_dw.setText("双工模式: FDD");
-                        }
-                        if(gongWang.equals("")){
-                            tv1_td_dw.setText("双工模式: ");
-                        }
-                        DwUpdate.upwifi(msg, tv1_wifi_dw, tv1_type_dw);
-//                    }
-//                    if (ViewTYPE == 2) {//搜救模式下
-//
-//                    }
-                    break;
-                case 200148: //展示中标imsi 一个
-                    if (ViewTYPE == 1) {
-                        presenter.setIMSIshow2(msg, tv_imsi2_dw);
+                        mode = "";//双工模式
                     }
-                break;
+                    DwUpdate.upwifi(msg, tv1_wifi_dw, tv1_type_dw,tv1_td_dw);
+                    break;
             }
         }
     };
+    public static String mode="";//双工模式
     RyImsiAdapter ryImsiAdapter;
     List<AddPararBean> pararBeansList1 = new ArrayList<>();
+    List<String> listIMSI=new ArrayList<>();//用于保存定位的imsi
     String mydown2GK = "";
     String mydown1GK = "";
     String mydown11GK = "";
@@ -740,11 +1223,11 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
             ImageButton ib_dc_zm;
     @BindView(R.id.sos_ib_qc_sos)//搜救 侦码清除
             ImageButton sos_ib_qc_sos;*/
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(soslayout);
+
 //        new ViewPagerMainActivity().isFirstStart(this);
 
         String s = "Hello world!";
@@ -764,24 +1247,8 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 
 
 
-     /*   ib_dc_zm.setOnClickListener(this);
-        sos_ib_qc_sos.setOnClickListener(this);*/
         seekBarOnchangLister();//滑动条监听
-        timerLocationshepingonglv = new Timer();
-        //schedule方法是执行时间定时任务的方法
-        timerLocationshepingonglv.schedule(new TimerTask() {
-
-            //run方法就是具体需要定时执行的任务
-            @Override
-            public void run() {
-                Message message = new Message();
-                handler.sendMessage(message);
-//                message.what = 100;
-//                Log.d(TAG, "handlerrun: " + 1);
-//                DeviceUtils.SelectQury(3, 1);
-            }
-        }, 0, 3000);
-        initTextToSpeech();
+        MyTTS.getInstance().init(this);
         setEt_search();
         stringBuffer1dw = new StringBuffer();
         stringBuffer2dw = new StringBuffer();
@@ -806,7 +1273,7 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         ryIMSI_dw.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         setSlidubutton();//设置滑动按钮监听
         setPinnerdata();//设置下拉框数据
-        CheckBoxOnclickSet();//设置增益
+        CheckBoxOnclickSet();//设置增益按钮隐藏
         ImslList();//初始化IMSI
         list1quxian = new ArrayList<>();
         list2quxian = new ArrayList<>();
@@ -840,35 +1307,16 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 
 
 
-
-
         message = new Message();
         bundle = new Bundle();
-        timer1 = new Timer();
-        timer2 = new Timer();
         timer_wendu = new Timer();
         buf = new byte[1024];
         dp = new DatagramPacket(buf, buf.length);
 //        MainUtils.ReceiveMainWD(handler, message, bundle, timer_wendu);
-        MainUtils.ReceiveMain(handler, message, bundle, timer1, timer2, dp, buf, context, runThread);//开启线程监听
-        MainUtils.WifiMain(handler, message, bundle, timer1, timer2, dp, buf, context);//开启wifi监听
+//        MainUtils.ReceiveMain(handler, message, bundle, timer1, timer2, dp, buf, context, runThread);//开启线程监听
+        MainUtils.WifiMain(handler, message, bundle, null, null, dp, buf, context);//开启wifi监听
         AddITemMenu(0);//添加菜单的按钮  0  定位
-        if (timerLocation == null) {
-            timerLocation = new Timer();
-            //schedule方法是执行时间定时任务的方法
-            timerLocation.schedule(new TimerTask() {
-
-                //run方法就是具体需要定时执行的任务
-                @Override
-                public void run() {
-                    Message message = new Message();
-                    handler.sendMessage(message);
-                        message.what = 300002;
-//                    Log.d(TAG, "handlerrun: " + 1);
-                }
-//            }, 0, 10000);
-            }, 0, 8000);
-        }
+//
         try {//初始化 清除上次的侦码记录
             DBManagerZM dbManagerZM = new DBManagerZM(this);
             List<ZmBean> zmBeans = dbManagerZM.getDataAll();
@@ -979,8 +1427,88 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         //风扇隐藏
         iv_fengshan.setVisibility(View.GONE);
 
-        //设置启动按钮上设备名称
-//        tv_sb1_jl_dw.setText("设备1");
+
+        //imsi值为空
+        tv_imsi1_dw.setText("");
+        //imsi为空
+        tv_sb1_jl_dw.setText("");
+
+
+
+
+
+        timer0303 = new Timer();
+        timer0303.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //连接成功后  监听看当前谁是中标状态
+                    if(!CommandUtils.type0303.equals("")){
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if(shePin.equals("开启")||shePin.equals("")){
+                                        ImslList0303(CommandUtils.type0303);//获取的imsi和数据库里对比是哪个
+                                    String s = CommandUtils.type0303;
+                                    String f = s.substring(48);//获取的 消息内容
+
+                                    MyLog.e("ttt", f + "\r\n");
+                                    String[] imsi = f.split("IMSI:");
+                                    String ims = imsi[1].substring(0, 15);
+                                    Log.e("ttt", "IMSI号为: " + ims);
+
+                                    String[] time = f.split("TIME:");
+                                    String tim = time[1].substring(0, 10);
+                                    MyLog.e("ttt", tim);
+
+                                    String[] RSSI = f.split("RSSI:");
+                                    String rssi = RSSI[1].substring(0, 5);
+                                    rssi = com.sm.android.locations.location.initData.MyUtils.getNumber(rssi);
+                                    MyLog.e("ttt", rssi);
+
+
+
+
+
+                                    //设置曲线图
+                                    list1quxian.remove(0);
+                                    list1quxian.add((130-Integer.parseInt(rssi))*1000/130);
+                                    setqxData(list1quxian, list2quxian);
+
+
+
+
+
+//                        //被定位时播放被定位的imsi
+                                    if(laba1Flag){
+                                        MyTTS.getInstance().speak(((130-Integer.parseInt(rssi))*1000/130)+"");
+                                    }
+
+                                    //设置能量值 和语音播报时 让语音提前一秒播放
+                                    //显示能量值
+                                    tv_sb1_jl_dw.setText(((130-Integer.parseInt(rssi))*1000/130)+"");
+                                    if(tv_imsi1_dw.getText().toString().equals("")||!tv_imsi1_dw.getText().toString().equals(rssi)){
+                                        tv_imsi1_dw.setText(ims);
+                                    }//
+
+                                }
+                                CommandUtils.type0303="";
+                            }
+                        });
+                    }else{//射频关闭的时候
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //imsi值为空
+                                tv_imsi1_dw.setText("");
+                                //imsi为空
+                                tv_sb1_jl_dw.setText("");
+                                ImslList2();
+                            }
+                        });
+
+                    }
+            }
+        }, 0,2000);
     }
 
     @SuppressLint("NewApi")
@@ -1068,10 +1596,10 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     protected void onStop() {
         super.onStop();
         // 不管是否正在朗读TTS都被打断
-        if(textToSpeech!=null){
-            textToSpeech.stop();
+        if(mTextToSpeech!=null){
+            mTextToSpeech.stop();
             // 关闭，释放资源
-            textToSpeech.shutdown();
+            mTextToSpeech.shutdown();
         }
     }
 
@@ -1132,29 +1660,46 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     }
 
     private void CheckBoxOnclickSet() {
-
+        cbzt1_g.setChecked(true);//默认选中高增益
         //设备1
         cbzt1_d.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    zy=1;
                     cbzt1_z.setChecked(false);
                     cbzt1_g.setChecked(false);
-                    try {
-                        DBManagerZY dbManagerZY = new DBManagerZY(context);
-                        if (tf1.equals("TDD")) {
-                            int data = dbManagerZY.foriddata(1, 1, 1);
-                            setzy(data, 1);
-                        }
-                        if (tf1.equals("FDD")) {
-                            int data = dbManagerZY.foriddata(1, 2, 1);
-                            setzy(data, 1);
-                            Log.d("zydata", "onCheckedChanged: " + data);
-                        }
 
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    if(socketTcpServer!=null){
+                        if(!CommandUtils.type.equals("")){//连接状态
+                            try {
+                                DBManagerDevice device = new DBManagerDevice(context);
+                                List<DeviceBean> deviceBeans = device.getDeviceBeans();
+                                if(deviceBeans.size()>0){
+                                    CommandUtils.syType=1;
+                                    CommandUtils.zyType=deviceBeans.get(deviceBeans.size()-1).getEt_Zyd();
+                                    presenter.setZy(socketTcpServer,deviceBeans.get(deviceBeans.size()-1).getEt_Zyd());
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
+//                    try {
+//                        DBManagerZY dbManagerZY = new DBManagerZY(context);
+//                        if (tf1.equals("TDD")) {
+//                            int data = dbManagerZY.foriddata(1, 1, 1);
+//                            setzy(data, 1);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            int data = dbManagerZY.foriddata(1, 2, 1);
+//                            setzy(data, 1);
+//                            Log.d("zydata", "onCheckedChanged: " + data);
+//                        }
+//
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
 //
                 } else {
 //                    cbzt1_d.setChecked(true);
@@ -1174,22 +1719,38 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    zy=2;
                     cbzt1_d.setChecked(false);
                     cbzt1_g.setChecked(false);
-                    try {
-                        DBManagerZY dbManagerZY = new DBManagerZY(context);
-                        if (tf1.equals("TDD")) {
-                            int data = dbManagerZY.foriddata(1, 1, 2);
-                            setzy(data, 1);
+                    if(socketTcpServer!=null){
+                        if(!CommandUtils.type.equals("")){//连接状态
+                            try {
+                                DBManagerDevice device = new DBManagerDevice(context);
+                                List<DeviceBean> deviceBeans = device.getDeviceBeans();
+                                if(deviceBeans.size()>0){
+                                    CommandUtils.syType=2;
+                                    CommandUtils.zyType=deviceBeans.get(deviceBeans.size()-1).getEt_Zyz();
+                                    presenter.setZy(socketTcpServer,deviceBeans.get(deviceBeans.size()-1).getEt_Zyz());
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        if (tf1.equals("FDD")) {
-                            int data = dbManagerZY.foriddata(1, 2, 2);
-                            setzy(data, 1);
-                        }
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
+//                    try {
+//                        DBManagerZY dbManagerZY = new DBManagerZY(context);
+//                        if (tf1.equals("TDD")) {
+//                            int data = dbManagerZY.foriddata(1, 1, 2);
+//                            setzy(data, 1);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            int data = dbManagerZY.foriddata(1, 2, 2);
+//                            setzy(data, 1);
+//                        }
+//
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
                 } else {
                     if (!cbzt1_d.isChecked() && !cbzt1_g.isChecked()) {
                         cbzt1_z.setChecked(true);
@@ -1204,22 +1765,38 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
+                    zy=3;
                     cbzt1_z.setChecked(false);
                     cbzt1_d.setChecked(false);
-                    try {
-                        DBManagerZY dbManagerZY = new DBManagerZY(context);
-                        if (tf1.equals("TDD")) {
-                            int data = dbManagerZY.foriddata(1, 1, 3);
-                            setzy(data, 1);
+                    if(socketTcpServer!=null){
+                        if(!CommandUtils.type.equals("")){//连接状态
+                            try {
+                                DBManagerDevice device = new DBManagerDevice(context);
+                                List<DeviceBean> deviceBeans = device.getDeviceBeans();
+                                if(deviceBeans.size()>0){
+                                    CommandUtils.syType=3;
+                                    CommandUtils.zyType=deviceBeans.get(deviceBeans.size()-1).getEt_Zyg();
+                                    presenter.setZy(socketTcpServer,deviceBeans.get(deviceBeans.size()-1).getEt_Zyg());
+                                }
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        if (tf1.equals("FDD")) {
-                            int data = dbManagerZY.foriddata(1, 2, 3);
-                            setzy(data, 1);
-                        }
-
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
+//                    try {
+//                        DBManagerZY dbManagerZY = new DBManagerZY(context);
+//                        if (tf1.equals("TDD")) {
+//                            int data = dbManagerZY.foriddata(1, 1, 3);
+//                            setzy(data, 1);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            int data = dbManagerZY.foriddata(1, 2, 3);
+//                            setzy(data, 1);
+//                        }
+//
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
                 } else {
                     if (!cbzt1_z.isChecked() && !cbzt1_d.isChecked()) {
                         cbzt1_g.setChecked(true);
@@ -1344,12 +1921,17 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         popupWindow.setOnItemClickListener(new DLPopupWindow.OnItemClickListener() {
             @Override
             public void OnClick(int position) {
+//                if(CommandUtils.sbZt.equals("定位中...")){
+//                    ToastUtils.showToast("请先停止定位");
+//                    return;
+//                }
 //                ToastUtils.showToast(mList.get(position).getText());
                 if (mList.get(position).getText().equals("添加IMSI")) {
                     startActivity(new Intent(context, AddParamActivity.class));
                 }
                 if (mList.get(position).getText().equals("目标IMSI")) {
-                    startActivity(new Intent(context, ParamActivity.class));
+                        startActivity(new Intent(context, ParamActivity.class));
+
 //                    startActivity(new Intent(context, Param2Activity.class));
                 }
                 if (mList.get(position).getText().equals("非控IMSI")) {
@@ -1511,8 +2093,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 //                    slideButton1.setChecked(false);
                     mysp2.setVisibility(View.VISIBLE);
                     mysp2.setEnabled(true);
-//                    mysp1.setVisibility(View.VISIBLE);
-//                    mysp1.setEnabled(true);
                 }
             }
         });
@@ -1522,7 +2102,7 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     public String upStr = "";
 
     //拼接状态栏 数据处理
-    private void Set1StatusBar(String str) {
+    public void Set1StatusBar(String str) {
         if (!upStr.equals(str)) {
             stringBuffer1dw.append(str + "" + "\n");
             textViews1dw.setText(stringBuffer1dw);
@@ -1689,7 +2269,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
             case R.id.bt_0:
                 if (sb1_gk.equals("搜索中")) {
                     ToastUtils.showToast("设备1搜索中请先停止");
-
                     break;
                 }
                 if (sb1_gk.equals("管控中")) {
@@ -1726,6 +2305,7 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                 }
                 if (sb2.equals("定位中")) {
                     ToastUtils.showToast("设备2定位中请先停止");
+多个imsi被定位中显示出来
 
                     break;
                 }
@@ -1802,37 +2382,128 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 
                 break;
             case R.id.textViews1dw:
-                socketTcpServer.sendPost(MyUtils.getSocketHeader(MyUtils.getToHexString("0108", "")));//获取公网参数
+//                socketTcpServer.sendPost(MyUtils.getSocketHeader(MyUtils.getToHexString("0108", "")));//获取公网参数
                 break;
 
             case R.id.bt_start1dw:
 //                if (slideButton1Flag) {//自动建立小区
 ////                    ToastUtils.showToast("设备1自动建立小区");
-//                    zidongsaopinjianlixiaoqu(1);
+
 //                } else {//手动建立小区
 ////                    ToastUtils.showToast("手动建立小区");
 //                    presenter.startSD(1, tf1, context, spinnerS1, sb1);
 //                }
                 if(!slideButton1Flag){//手动建立小区
-                    if(sbZhuangTai.equals("就绪状态")){
-                        //设置工作参数
-                        presenter.startSD(1, type, context, spinnerS1, SOSActivity.sbZhuangTai,tv1_wifi_dw.getText().toString(),socketTcpServer);
-                    }else{
-                        ToastUtils.showToast("正在启动设备");
+                    if(CommandUtils.sbZt.equals("")){
+                        ToastUtils.showToast("设备未连接");
+                    }else{//如果设备已经是工作状态无需启动
+//                        if(CommandUtils.RF.equals("")){
+//                            return;
+//                        }
+//                        if(Integer.parseInt(CommandUtils.RF)!=0){
+//                            return;
+//                        }
+                        if(CommandUtils.sbZt.equals("启动中")){
+                            ToastUtils.showToast("设备启动中");
+                            return;
+                        }
+                        if(CommandUtils.sbZt.equals("定位中")){
+                            ToastUtils.showToast("请先停止定位");
+                            return;
+                        }
+                        if(CommandUtils.sbZt.equals("扫频中")){
+                            ToastUtils.showToast("设备扫频中请稍候");
+                            return;
+                        }if(!CommandUtils.sbZt.equals("就绪")){
+                            return;
+                        }
+                        //启动设备
+                        presenter.startSD(1, CommandUtils.type, context, spinnerS1, SOSActivity.sbZhuangTai,tv1_wifi_dw.getText().toString(),socketTcpServer);
                     }
                 }else{
-                    ToastUtils.showToast("自动扫频");
+                    if(CommandUtils.sbZt.equals("")){
+                        ToastUtils.showToast("设备未连接");
+                    }else{
+//                        if(CommandUtils.RF.equals("")){
+//                            return;
+//                        }
+//                        if(Integer.parseInt(CommandUtils.RF)!=0){
+//                            return;
+//                        }
+                        if(CommandUtils.sbZt.equals("启动中")){
+                            ToastUtils.showToast("设备启动中");
+                            return;
+                        }
+                        if(CommandUtils.sbZt.equals("定位中")){
+                            ToastUtils.showToast("请先停止定位");
+                            return;
+                        }
+                        if(CommandUtils.sbZt.equals("扫频中")){
+                            ToastUtils.showToast("设备扫频中请稍候");
+                            return;
+                        }
+//                        try {
+//                            List<AddPararBean> addPararBeanList=null;
+//                            addPararBeanList=new ArrayList<>();
+//
+//                            DBManagerAddParam param = new DBManagerAddParam(context);
+//                            List<AddPararBean> dataAll = param.getDataAll();
+//                            if(dataAll.size()>0){
+//                                for (AddPararBean addPararBean : dataAll) {
+//                                    if(addPararBean.isCheckbox()==true){
+//                                        addPararBeanList.add(addPararBean);
+//                                    }
+//                                }
+//                            }
+//
+//                            if(addPararBeanList.size()>0){
+//                                String imsi = addPararBeanList.get(0).getImsi();
+//                                if (imsi.startsWith("46000")||imsi.startsWith("46002")) {//因为移动网络编号46000下的IMSI已经用完，所以虚拟了一个46002编号，134/159号段使用了此编号
+//                                        //中国移动
+//                                        Log.d("aimsistartsWith", "init: 中国移动");
+//                                        tf1 = "TDD";
+//                                    } else if (imsi.startsWith("46001")) {
+//                                        //中国联通
+//                                        Log.d("aimsistartsWith", "init: 中国联通");
+//                                        tf1 = "FDD";
+//
+//                                    } else if (imsi.startsWith("46003") || (imsi.startsWith("46011"))) {
+//                                        //中国电信
+//                                        Log.d("aimsistartsWith", "init: 中国电信");
+//                                        tf1 = "FDD";
+//                                    }
+//
+//                            }
+//                                   zidongsaopinjianlixiaoqu(1);//自动扫频
+//                        } catch (SQLException e) {
+//                            e.printStackTrace();
+//                        }
+////
+                        if(!CommandUtils.MODE.equals("")){
+                            if(Integer.parseInt(CommandUtils.MODE)==1){
+                                tf1="TDD";
+
+                            }
+                            if(Integer.parseInt(CommandUtils.MODE)==2){
+                                tf1="FDD";
+                            }
+
+                             zidongsaopinjianlixiaoqu(1);//自动扫频
+
+                        }
+
+                    }
                 }
                 break;
             case R.id.bt_start2dw:
-                if (slideButton2Flag) {//自动建立小区
-//                    ToastUtils.showToast("设备2自动建立小区");
-                    zidongsaopinjianlixiaoqu(2);
-                } else {//手动建立小区
-                    presenter.startSD(2, tf2, context, spinnerS2, sb2,tv1_td_dw.getText().toString(),socketTcpServer);
-
-                }
-                break;
+//                if (slideButton2Flag) {//自动建立小区
+////                    ToastUtils.showToast("设备2自动建立小区");
+//                    zidongsaopinjianlixiaoqu(2);
+//                } else {//手动建立小区
+//                    presenter.startSD(2, CommandUtils.type, context, spinnerS2, sb2,tv1_td_dw.getText().toString(),socketTcpServer);
+//
+//                }
+//                break;
 
             case R.id.bts_start_sos:
 //                ToastUtils.showToast("开始人工搜救");
@@ -1845,8 +2516,25 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                 presenter.stopGK(context);
                 break;
             case R.id.bt_stop1dw:
-//                sb1FirstFlag = false;
-                presenter.stopdw(1, context, sb1,socketTcpServer);
+//                if(type.equals("")){
+//                   ToastUtils.showToast("设备未连接");
+//                   return;
+//                }
+
+                if(CommandUtils.sbZt.equals("")){
+                    ToastUtils.showToast("设备未连接");
+                }else{
+                    if(CommandUtils.RF.equals("")){
+                        presenter.stopdw(1, context, sb1,socketTcpServer);
+                    }else{
+                        if(CommandUtils.RF.equals("1")){//开启
+                            presenter.stopdw(1, context, sb1,socketTcpServer);
+                        }else{
+                            ToastUtils.showToast("射频已经关闭");
+                        }
+                    }
+                }
+
                 break;
             case R.id.bt_stop2dw:
                 sb1FirstFlag = false;
@@ -2031,8 +2719,9 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
             listImsiListTrue = new ArrayList<>();
             if (dataAll.size() > 0) {
                 for (int i = 0; i < dataAll.size(); i++) {
-                    if (dataAll.get(i).isCheckbox() == true) {
+                    if (dataAll.get(i).isCheckbox() == true) {//数据库里选中的
                         Log.i("杨路通ImslList0303", "ImslList0303: "+dataAll.get(i).getImsi());
+
                         if(msg.contains(dataAll.get(i).getImsi())){
                             dataAll.get(i).setSb("1");
                         }else{
@@ -2057,6 +2746,45 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }//imsi列表
+    private void ImslListData(List<String> msg) {
+        List<AddPararBean> dataAll = null;//首页IMSI列表的数据
+        List<AddPararBean> listImsiListTrue = null;
+        try {
+            DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(this);
+            dataAll = dbManagerAddParam.getDataAll();
+            listImsiListTrue = new ArrayList<>();
+            if (dataAll.size() > 0) {
+                for (int i = 0; i < dataAll.size(); i++) {//5
+                    if (dataAll.get(i).isCheckbox() == true) {//数据库里选中的
+                        Log.i("采集8秒", "dataAll.get(i).getImsi(): "+dataAll.get(i).getImsi());
+                        for (String s : msg) {
+                            Log.i("采集8秒", "msg: "+s);
+                        }
+                        if(msg.contains(dataAll.get(i).getImsi())){
+                            dataAll.get(i).setSb("1");
+                        }else{
+                            dataAll.get(i).setSb("");
+                        }
+                        listImsiListTrue.add(dataAll.get(i));
+                    }
+                }
+                Log.d("采集8秒", "listImsiListTrue: " + listImsiListTrue.toString());
+                List<Integer> list1size = new ArrayList<>();
+                //list是imsi列表选中的数据
+                if (listImsiListTrue.size() > 0) {
+                    for (int i = 1; i < listImsiListTrue.size() + 1; i++) {
+                        list1size.add(i);
+                    }
+                }
+                pararBeansList1 = listImsiListTrue;
+                ryImsiAdapter = new RyImsiAdapter(context, listImsiListTrue, list1size, config, tv_imsi1_dw, tv_imsi2_dw);//list是imsi列表选中的数据
+                ryIMSI_dw.setAdapter(ryImsiAdapter);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     RyImsiAdapter.IDialogPinConfig config = new RyImsiAdapter.IDialogPinConfig() {
@@ -2064,6 +2792,14 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         public void call(final String imsi, String sb) {
 //            if (sb.equals("1")) {
 //
+
+                MyLog.e("configMMM", CommandUtils.sbZt);
+                if(CommandUtils.sbZt.equals("")){
+                    ToastUtils.showToast("设备未连接");
+                    return;
+                }
+                Set1StatusBar("切换目标IMSI"+imsi);
+                SOSActivity.this.imsi=imsi;
                 dialog = new Dialog(context, R.style.menuDialogStyleDialogStyle);
                 inflate = LayoutInflater.from(context).inflate(R.layout.dialog_item_title, null);
                 TextView tv_title = inflate.findViewById(R.id.tv_title);
@@ -2187,13 +2923,35 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         }
     };
 
+    public static boolean isSbState=false;
+    public static String sbState="";//程序进入后台时保存设备状态
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        //程序进入后台保存设备状态
+//        sbState=CommandUtils.sbZt;
+//        isSbState=false;
+
+        //将喇叭关闭
+        laba1Flag=false;
+    }
     @Override
     protected void onResume() {
         super.onResume();
+//        isSbState=true;
+        //喇叭开启
+        laba1Flag=true;
+        laba1dw.setBackground(context.getResources().getDrawable(R.mipmap.laba_green));
+
+
+        if(zmListsize.size()>0){//设置侦码记录多少条
+            tv_searchNumdw.setText("(" + zmListsize.size() + ")");
+        }
         ImslList();
         setPinnerdata();//设置下拉框数据
     }
 
+    Timer timerState;//监听设备状态
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -2249,23 +3007,23 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 
         Log.d("statessbImsiType", "statessbImsiType: " + states.toString());
         //创建一个定时器
-        if (timer == null) {
-            timer = new Timer();
-            //schedule方法是执行时间定时任务的方法
-            timer.schedule(new TimerTask() {
-
-                //run方法就是具体需要定时执行的任务
-                @Override
-                public void run() {
-
-                    Message message = new Message();
-                    handler.sendMessage(message);
-                    message.what = 300001;
-//                    Log.d(TAG, "handlerrun: " + 1);
-//                    Log.d(TAG, "handlerrun: " + 1);
-                }
-            }, 0, 11000);//IMSI
-        } else {
+//        if (timer == null) {
+//            timer = new Timer();
+//            //schedule方法是执行时间定时任务的方法
+//            timer.schedule(new TimerTask() {
+//
+//                //run方法就是具体需要定时执行的任务
+//                @Override
+//                public void run() {
+//
+//                    Message message = new Message();
+//                    handler.sendMessage(message);
+//                    message.what = 300001;
+////                    Log.d(TAG, "handlerrun: " + 1);
+////                    Log.d(TAG, "handlerrun: " + 1);
+//                }
+//            }, 0, 11000);//IMSI
+//        } else {
 //            Log.d(TAG, "ahandlerrun: " + 1);
 
 //            timer.schedule(new TimerTask() {
@@ -2279,140 +3037,10 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 //                    Log.d(TAG, "handlerrun: " + 1);
 //                }
 //            }, 0, 4000);
-        }
-    }
-
-
-    private void startAuto(String data, boolean b) {
-        // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-        textToSpeech.setPitch(1.0f);
-        // 设置语速
-        textToSpeech.setSpeechRate(0.5f);
-//        textToSpeech.setPitch(1.f);
-//        Log.d("wpnqq", "startAuto: " + b);
-//
-//        // 设置语速
-//        textToSpeech.setSpeechRate(8.01f);
-//        textToSpeech.speak(data,//输入中文，若不支持的设备则不会读出来
-//                TextToSpeech.QUEUE_FLUSH, null);
-        // TODO validate success, do something
-        if (textToSpeech != null && !textToSpeech.isSpeaking()) {
-            /*
-                TextToSpeech的speak方法有两个重载。
-                // 执行朗读的方法
-                speak(CharSequence text,int queueMode,Bundle params,String utteranceId);
-                // 将朗读的的声音记录成音频文件
-                synthesizeToFile(CharSequence text,Bundle params,File file,String utteranceId);
-                第二个参数queueMode用于指定发音队列模式，两种模式选择
-                （1）TextToSpeech.QUEUE_FLUSH：该模式下在有新任务时候会清除当前语音任务，执行新的语音任务
-                （2）TextToSpeech.QUEUE_ADD：该模式下会把新的语音任务放到语音任务之后，
-                等前面的语音任务执行完了才会执行新的语音任务
-             */
-            textToSpeech.speak("杨路通", TextToSpeech.QUEUE_FLUSH, null);
-        }
-    }
-
-
-    private void initTextToSpeech() {
-        // 参数Context,TextToSpeech.OnInitListener
-        mTextToSpeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS) {
-            /*
-                使用的是小米手机进行测试，打开设置，在系统和设备列表项中找到更多设置，
-            点击进入更多设置，在点击进入语言和输入法，见语言项列表，点击文字转语音（TTS）输出，
-            首选引擎项有三项为Pico TTs，科大讯飞语音引擎3.0，度秘语音引擎3.0。其中Pico TTS不支持
-            中文语言状态。其他两项支持中文。选择科大讯飞语音引擎3.0。进行测试。
-
-            	如果自己的测试机里面没有可以读取中文的引擎，
-            那么不要紧，我在该Module包中放了一个科大讯飞语音引擎3.0.apk，将该引擎进行安装后，进入到
-            系统设置中，找到文字转语音（TTS）输出，将引擎修改为科大讯飞语音引擎3.0即可。重新启动测试
-            Demo即可体验到文字转中文语言。
-             */
-                    // setLanguage设置语言
-                    int result = mTextToSpeech.setLanguage(Locale.CHINA);
-                    // TextToSpeech.LANG_MISSING_DATA：表示语言的数据丢失
-                    // TextToSpeech.LANG_NOT_SUPPORTED：不支持
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Toast.makeText(SOSActivity.this, "数据丢失或不支持", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-        // 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-        mTextToSpeech.setPitch(1.0f);
-        // 设置语速
-        mTextToSpeech.setSpeechRate(0.5f);
-    }
-    private void mStartAuto(String data) {
-//        // validate
-//        String text = main_edit_text.getText().toString().trim();
-//        if (TextUtils.isEmpty(text)) {
-//            Toast.makeText(this, "请您输入要朗读的文字", Toast.LENGTH_SHORT).show();
-//            return;
 //        }
-
-        // TODO validate success, do something
-        if (mTextToSpeech != null && !mTextToSpeech.isSpeaking()) {
-            /*
-                TextToSpeech的speak方法有两个重载。
-                // 执行朗读的方法
-                speak(CharSequence text,int queueMode,Bundle params,String utteranceId);
-                // 将朗读的的声音记录成音频文件
-                synthesizeToFile(CharSequence text,Bundle params,File file,String utteranceId);
-                第二个参数queueMode用于指定发音队列模式，两种模式选择
-                （1）TextToSpeech.QUEUE_FLUSH：该模式下在有新任务时候会清除当前语音任务，执行新的语音任务
-                （2）TextToSpeech.QUEUE_ADD：该模式下会把新的语音任务放到语音任务之后，
-                等前面的语音任务执行完了才会执行新的语音任务
-             */
-            mTextToSpeech.speak(data, TextToSpeech.QUEUE_FLUSH, null);
-        }
-
-    }
-    private void initTTS2() {
-        //实例化自带语音对象
-        textToSpeech = new TextToSpeech(SOSActivity.this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == textToSpeech.SUCCESS) {
-                    // setLanguage设置语言
-                    int result = textToSpeech.setLanguage(Locale.CHINA);
-                    // TextToSpeech.LANG_MISSING_DATA：表示语言的数据丢失
-                    // TextToSpeech.LANG_NOT_SUPPORTED：不支持
-                    if (result == TextToSpeech.LANG_MISSING_DATA
-                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                        Toast.makeText(SOSActivity.this, "数据丢失或不支持", Toast.LENGTH_SHORT).show();
-                    }
-//                    // Toast.makeText(MainActivity.this,"成功输出语音",
-//                    // Toast.LENGTH_SHORT).show();
-//                    // Locale loc1=new Locale("us");
-//                    // Locale loc2=new Locale("china");
-//
-//                    textToSpeech.setPitch(0.5f);//方法用来控制音调
-//                    textToSpeech.setSpeechRate(0.01f);//用来控制语速
-//
-//                    //判断是否支持下面两种语言
-//                    int result1 = textToSpeech.setLanguage(Locale.US);
-//                    int result2 = textToSpeech.setLanguage(Locale.
-//                            SIMPLIFIED_CHINESE);
-//                    boolean a = (result1 == TextToSpeech.LANG_MISSING_DATA || result1 == TextToSpeech.LANG_NOT_SUPPORTED);
-//                    boolean b = (result2 == TextToSpeech.LANG_MISSING_DATA || result2 == TextToSpeech.LANG_NOT_SUPPORTED);
-//
-////                    Log.i("zhh_tts", "US支持否？--》" + a +
-////                            "\nzh-CN支持否》--》" + b);
-//                } else {
-////                    MyToast.showToast("数据丢失或不支持");
-//                    Toast.makeText(SOSActivity.this, "数据丢失或不支持", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
     }
 
-    private boolean saopinshow1 = false;  //小区查看 不建立小区
+    private boolean saopinshow1 = false;  //小区查看 不建立小区  区分小区查看和扫频
     private boolean saopinshow2 = false;
 
     /**
@@ -2441,34 +3069,38 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     private SpBean spBean254 = new SpBean();
     private boolean phoneFlag1 = true;// 自动手机扫频
     private boolean phoneFlag2 = true;// 自动手机扫频
-    SaoPinCallback saoPinCallback = new SaoPinCallback() {
+
+    CallBackSetState setState=new CallBackSetState() {
+        @Override
+        public void showStateBar(String title) {
+                Set1StatusBar(title);
+        }
+    };
+    SaoPinCallback saoPinCallback = new SaoPinCallback() {//扫频设备扫描
         @Override
         public void sucess(int sb, int i) {
-
-            Log.d("saoPinCallback", "sucess: 设备" + sb + "i===" + i);
+            Log.d("saoPinCallback", "sucess: 设备" + sb + "i===" + i+saopinshow1);
             SAOPIN = i;
             SAOPIN2 = i;
             if (sb == 1) {
-                if (saopinshow1) {//如果是 小区查看
-                    presenter.spbuilsshow(context, sb, i, tf1, tf2);//扫频建立小区
-                } else {//如果是扫频并建立小区
+                if (saopinshow1) {//小区查看
+                    presenter.spbuilsshow(context, sb, i, tf1, tf2,setState);//扫频建立小区
+                } else {//是扫频
                     sp1MAX1value = "";
                     sp1MAX2value = "";
-                    presenter.spbuils(context, sb, i, tf1, tf2);//扫频建立小区
-
+                    presenter.spbuils(context, sb, i, tf1, tf2,setState);//扫频建立小区
                     phoneFlag1 = false;
                 }
 
             }
             if (sb == 2) {
-
                 if (saopinshow2) {//如果是小区查看
-                    presenter.spbuilsshow(context, sb, i, tf1, tf2);//扫频小区
+                    presenter.spbuilsshow(context, sb, i, tf1, tf2,setState);//扫频小区
 
                 } else {
                     sp2MAX1value = "";
                     sp2MAX2value = "";
-                    presenter.spbuils(context, sb, i, tf1, tf2);//扫频建立小区
+                    presenter.spbuils(context, sb, i, tf1, tf2,setState);//扫频建立小区
                     phoneFlag2 = false;
                 }
 
@@ -2480,7 +3112,10 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         public void sucessphone(int sb, String down, SpBean spBean, boolean phonesp) {
             Log.d("baqsa", "sucessphone: " + sb + "--" + down);
             if (sb == 1) {
-
+                if(socketTcpServer==null){
+                    ToastUtils.showToast("请检查是否已连接设备");
+                    return;
+                }
 //                phone1sp = phonesp;
                 sp1MAX1value = down;
                 spBean1 = spBean;
@@ -2489,82 +3124,87 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                     SAOPIN = 1;
                     Log.d("aaaplmnsucessphone", "sucessphone: +");
                     if (tf1.equals("TDD")) {
-
-                        presenter.setStart(1, slideButton1Flag, 0, sb1, sb2, sp1MAX1value, spinnerS2, context, tf1, tf2, 1, true);//restart   1表示重启 有弹窗,,, 0表示不重启没弹窗
-
+                        //1 设备1  slideButton1Flag手动自动标识  3.设备状态 4.下行频点
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
 
                     } else {
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
-                        }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                        }
-                        MainUtils.Qiehuanzs(titles, IP1);
+//                        String titles = "";
+//                        if (tf1.equals("TDD")) {
+//                            titles = "FDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            titles = "TDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                        }
+//                        MainUtils.Qiehuanzs(titles, IP1);presenter.setStartYy(1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
+
                         phoneFlag1 = true;
                     }
                 } else if (spBean.getBand().equals("1") || spBean.getBand().equals("3") || spBean.getBand().equals("5") || spBean.getBand().equals("8") || MainUtils2.YY(spBean1.getPlmn()).equals("移动")) {//移动FDD
                     SAOPIN = 2;
                     if (tf1.equals("FDD")) {
-                        presenter.setStart(1, slideButton1Flag, 0, sb1, sb2, sp1MAX1value, spinnerS2, context, tf1, tf2, 1, true);//restart   1表示重启 有弹窗,,, 0表示不重启没弹窗
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
 //
                     } else {
 
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
-                        }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                        }
-                        MainUtils.Qiehuanzs(titles, IP1);
+//                        String titles = "";
+//                        if (tf1.equals("TDD")) {
+//                            titles = "FDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            titles = "TDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                        }
+//                        MainUtils.Qiehuanzs(titles, IP1);presenter.setStartYy(1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
+
                         phoneFlag1 = true;
                     }
                 } else if (MainUtils2.YY(spBean1.getDown()).equals("联通")) {
                     SAOPIN = 3;
                     if (tf1.equals("FDD")) {
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
 
-                        presenter.setStart(1, slideButton1Flag, 0, sb1, sb2, sp1MAX1value, spinnerS2, context, tf1, tf2, 1, true);//restart   1表示重启 有弹窗,,, 0表示不重启没弹窗
 
 
                     } else {
+//                        String titles = "";
+//                        if (tf1.equals("TDD")) {
+//                            titles = "FDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            titles = "TDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                        }
+//                        MainUtils.Qiehuanzs(titles, IP1);
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
 
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
-                        }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                        }
-                        MainUtils.Qiehuanzs(titles, IP1);
                         phoneFlag1 = true;
                     }
                 } else if (MainUtils2.YY(spBean1.getDown()).equals("电信")) {
                     SAOPIN = 4;
                     if (tf1.equals("FDD")) {
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
 
-                        presenter.setStart(1, slideButton1Flag, 0, sb1, sb2, sp1MAX1value, spinnerS2, context, tf1, tf2, 1, true);//restart   1表示重启 有弹窗,,, 0表示不重启没弹窗
 
 
                     } else {
 
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
-                        }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                        }
-                        MainUtils.Qiehuanzs(titles, IP1);
+//                        String titles = "";
+//                        if (tf1.equals("TDD")) {
+//                            titles = "FDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                        }
+//                        if (tf1.equals("FDD")) {
+//                            titles = "TDD";
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                        }
+//                        MainUtils.Qiehuanzs(titles, IP1);
+                        presenter.setStartYy(socketTcpServer,1,slideButton1Flag,CommandUtils.sbZt,sp1MAX1value, context, tf1, true);
                         phoneFlag1 = true;
                     }
                 }
@@ -2703,7 +3343,31 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 //
 //    }
     public void saopinList(View view) {
+        if(CommandUtils.sbZt.equals("扫频中")){
+             ToastUtils.showToast("设备扫频中");
+             return;
+        }if(CommandUtils.sbZt.equals("启动中")){
+             ToastUtils.showToast("设备启动中");
+             return;
+        }if(CommandUtils.sbZt.equals("定位中")){
+             ToastUtils.showToast("设备定位中");
+             return;
+        }
+        if(!CommandUtils.sbZt.equals("就绪")){
+            ToastUtils.showToast("设备未就绪");
+            return;
+        }
         saopinshow1 = true;
+        if(!CommandUtils.MODE.equals("")){
+            if(Integer.parseInt(CommandUtils.MODE)==1){
+                tf1="TDD";
+
+            }
+            if(Integer.parseInt(CommandUtils.MODE)==2){
+                tf1="FDD";
+            }
+        }
+
         DialogUtils.SaoPinDialog2(1, context, inflate, saoPinCallback, tf1, false, sb1);
     }
 
@@ -2747,6 +3411,7 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
 
             @Override
             public void afterTextChanged(Editable editable) {
+                //将每次采集的imsi先保存到数据库 搜索时匹配数据库中查询到的imsi进行显示
                 String str = editable.toString();
                 if (!TextUtils.isEmpty(str) && str.length() > 0) {
                     DBManagerZM dbManagerZM = null;
@@ -2756,13 +3421,15 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                         e.printStackTrace();
                     }
                     //此处显示侦码的imsi列表
-                    List<ZmBean> zmBeanss = new ArrayList<>();
+                    List<ZmBean> zmBeanss;
                     List<ZmBean> zmBeans = new ArrayList<>();
                     try {
                         zmBeanss = dbManagerZM.getDataAll();
-                        for (int i = 0; i < zmBeanss.size(); i++) {
-                            if (zmBeanss.get(i).getMaintype().equals("0")) {
-                                zmBeans.add(zmBeanss.get(i));
+                        if(zmBeanss.size()>0){
+                            for (int i = 0; i < zmBeanss.size(); i++) {
+//                                if (zmBeanss.get(i).getMaintype().equals("0")) {
+                                    zmBeans.add(zmBeanss.get(i));
+//                                }
                             }
                         }
                     } catch (SQLException e) {
@@ -2774,7 +3441,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                             if (zmBeans.get(i).getImsi().contains(str)) {
                                 zmBeanscontains.add(zmBeans.get(i));
                             }
-
                         }
                     } else {
                         return;
@@ -2801,7 +3467,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                             ryZmAdapterdw = new RyZmAdapterdw(SOSActivity.this, zmBeanscontains, listsize);//list是imsi列表选中的数据
                             ry_zhenma_dw.setAdapter(ryZmAdapterdw);
                         }
-
                     }
                 } else {
 
@@ -3132,6 +3797,11 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
         }).start();
     }
 
+    @Override
+    public void showStateBar(String title) {
+        Set1StatusBar(title);
+    }
+
     interface SOSxuanzemubiao {
         void Callback(List<ZmBeanGKTongji> list, String device);
     }
@@ -3146,10 +3816,28 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MyLog.e("", "start Destroy~~~");
-        if(socketTcpServer!=null){
-            socketTcpServer.interrupt();
+//        MyLog.e("", "start Destroy~~~");
+//        if(socketTcpServer!=null){
+//            socketTcpServer.interrupt();
+//        }
+//        stopSocket();
+//        timerCancel();
+        MyTTS.getInstance().release();
+        Log.i("SOSffff", "onDestroy: ");
+    }
+
+
+
+
+    private void timerCancel() {
+        if(timerlistImsi!=null){
+            timerlistImsi.cancel();
+        }if(timer0303!=null){
+            timer0303.cancel();
+        }if(timer_wendu!=null){
+            timer_wendu.cancel();
+        }if(timerLocation!=null) {
+            timerLocation.cancel();
         }
-        stopSocket();
     }
 }

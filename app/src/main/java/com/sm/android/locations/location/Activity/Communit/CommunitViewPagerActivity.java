@@ -29,7 +29,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.sm.android.locations.location.Activity.Communit.Fragment.CommunitFragment1;
-import com.sm.android.locations.location.Activity.Communit.Fragment.CommunitFragment2;
 import com.sm.android.locations.location.Base.BaseActivity;
 import com.sm.android.locations.location.Base.BaseFragment;
 import com.sm.android.locations.location.R;
@@ -216,7 +215,7 @@ public class CommunitViewPagerActivity extends BaseActivity implements View.OnCl
         public MyFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
             fragments.add(new CommunitFragment1());
-            fragments.add(new CommunitFragment2());
+//            fragments.add(new CommunitFragment2());
 //            fragments.add(new PinConfigFragment2("联通"));
 //            fragments.add(new PinConfigFragment3("电信"));
         }

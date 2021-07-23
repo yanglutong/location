@@ -150,14 +150,14 @@ public class TextFragment3 extends BaseFragment {
         //增益
         tv_zy = view.findViewById(R.id.tv_zy);
         tv_sj = view.findViewById(R.id.tv_sj);
-        tv_rrcnum = view.findViewById(R.id.tv_rrcnum);
-        tv_rrcsucess = view.findViewById(R.id.tv_rrcsucess);
-        tv_rrcsucessnum = view.findViewById(R.id.tv_rrcsucessnum);
-        tv_imsiNum = view.findViewById(R.id.tv_imsiNum);
-        tv_imsiNumsucess = view.findViewById(R.id.tv_imsiNumsucess);
-
-        tv_tbtype = view.findViewById(R.id.tv_tbtype);
-        tv_tbzt = view.findViewById(R.id.tv_tbzt);
+//        tv_rrcnum = view.findViewById(R.id.tv_rrcnum);
+//        tv_rrcsucess = view.findViewById(R.id.tv_rrcsucess);
+//        tv_rrcsucessnum = view.findViewById(R.id.tv_rrcsucessnum);
+//        tv_imsiNum = view.findViewById(R.id.tv_imsiNum);
+//        tv_imsiNumsucess = view.findViewById(R.id.tv_imsiNumsucess);
+//
+//        tv_tbtype = view.findViewById(R.id.tv_tbtype);
+//        tv_tbzt = view.findViewById(R.id.tv_tbzt);
         /////////////
         tv_plmn.setText(PLMN2);
         tv_up.setText(UP2);

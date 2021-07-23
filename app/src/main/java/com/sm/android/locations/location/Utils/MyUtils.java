@@ -70,6 +70,7 @@ public class MyUtils {
             Manifest.permission.ACCESS_NETWORK_STATE,
     };//申请的权限
 
+
     public static String getWifiName(Activity activity) {
         WifiManager my_wifiManager = ((WifiManager) activity.getApplicationContext().getSystemService(WIFI_SERVICE));
         assert my_wifiManager != null;
@@ -95,6 +96,20 @@ public class MyUtils {
             for (int j = list.size() - 1; j > i; j--) {
                 // 进行比较
                 if (list.get(j).getImsi().equals(list.get(i).getImsi())) {
+                    // 去重
+                    list.remove(j);
+                }
+            }
+        }
+        return list;
+    }
+    public static List<SpBean> removeDd(List<SpBean> list) {
+// 从list中索引为0开始往后遍历
+        for (int i = 0; i < list.size() - 1; i++) {
+            // 从list中索引为 list.size()-1 开始往前遍历
+            for (int j = list.size() - 1; j > i; j--) {
+                // 进行比较
+                if (list.get(j).getDown().equals(list.get(i).getDown())) {
                     // 去重
                     list.remove(j);
                 }

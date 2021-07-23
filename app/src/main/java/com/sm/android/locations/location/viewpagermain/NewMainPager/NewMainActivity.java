@@ -357,7 +357,7 @@ public class NewMainActivity extends BaseActivity implements View.OnClickListene
 
         ry_zhenma_dw = findViewById(R.id.ry_zhenma_dw);//定位模式下的侦码记录
         et_zhenmasearchdw = findViewById(R.id.et_zhenmasearchdw);
-        setEt_search();
+        setEt_search();//初始化侦码记录
 
         tv_searchNumdw = findViewById(R.id.tv_searchNumdw);
         mysp1 = findViewById(R.id.mysp1);//设备1下拉框
@@ -1710,13 +1710,13 @@ public class NewMainActivity extends BaseActivity implements View.OnClickListene
                     break;
                 case 100001:
                     if (MainType == 0) {
-                        DwUpdate.upwifi(msg, tv1_wifi_dw, tv2_wifi_dw);
+                        DwUpdate.upwifi(msg, tv1_wifi_dw, tv2_wifi_dw,null);
                     }
                     if (MainType == 1) {
-                        DwUpdate.upwifi(msg, tv1_wifi_zm, tv2_wifi_zm);
+                        DwUpdate.upwifi(msg, tv1_wifi_zm, tv2_wifi_zm,null);
                     }
                     if (MainType == 2) {
-                        DwUpdate.upwifi(msg, tv1_wifi_gk, tv2_wifi_gk);
+                        DwUpdate.upwifi(msg, tv1_wifi_gk, tv2_wifi_gk,null);
                     }
                     break;
                 case 9001:
@@ -1733,11 +1733,7 @@ public class NewMainActivity extends BaseActivity implements View.OnClickListene
                             } else {
                                 Mydwon1 = listsucessDown1.get(0);
                                 presenter.setLunxunJianLixiaoqu(context, 1, Mydwon1, sb1_zm);
-
-
                             }
-
-
                             break;
                         } else {
                             MainUtils.sbzmLocation(IP1, context);  //侦码功能使用aaaaaaaaa

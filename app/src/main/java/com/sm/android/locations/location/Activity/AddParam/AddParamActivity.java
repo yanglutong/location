@@ -170,6 +170,15 @@ public class AddParamActivity extends BaseActivity implements View.OnClickListen
             ToastUtils.showToast("请输入15位IMSI号");
             return;
         }
+//        if(TextUtils.isEmpty(ed_phone.getText().toString())){
+//            ToastUtils.showToast("手机号不能为空");
+//            return;
+//        }
+//        if(TextUtils.isEmpty(ed_name.getText().toString())){
+//            ToastUtils.showToast("名称不能为空");
+//            return;
+//        }
+
 //        if (TextUtils.isEmpty(ed_yy.getText().toString())) {
 //            ToastUtils.showToast("运营商不能为空");
 //            return;

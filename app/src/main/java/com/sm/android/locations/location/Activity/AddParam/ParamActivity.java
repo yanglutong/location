@@ -98,7 +98,6 @@ public class ParamActivity extends BaseActivity implements View.OnClickListener 
 
     @Override
     protected void initQx() {
-
     }
 
     @Override

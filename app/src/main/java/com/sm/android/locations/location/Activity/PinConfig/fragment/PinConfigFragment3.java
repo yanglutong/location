@@ -44,6 +44,7 @@ import static com.sm.android.locations.location.App.App.context;
 @SuppressLint("ValidFragment")
 public class PinConfigFragment3 extends BaseFragment implements View.OnClickListener {
     private String name;
+    private boolean isShow=false;
     View view;
     PinConfigViewPagerAdapter pinConfigAdapter;
     RecyclerView ry;
@@ -108,6 +109,7 @@ public class PinConfigFragment3 extends BaseFragment implements View.OnClickList
 
     @Override
     public View initView() {
+        isShow=true;
         view = LayoutInflater.from(mContext).inflate(R.layout.activity_pin_config_viewpager_fragment, null);
         return view;
     }
@@ -127,13 +129,7 @@ public class PinConfigFragment3 extends BaseFragment implements View.OnClickList
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }).start();
-        if (isVisibleToUser) {
+        if (isVisibleToUser&&isShow) {
             // 相当于onResume()方法
             Log.d("nzq", "onResume: " + "执行了1");
             handler.postDelayed(new Runnable() {

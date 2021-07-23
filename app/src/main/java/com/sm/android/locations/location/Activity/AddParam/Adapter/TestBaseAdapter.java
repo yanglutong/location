@@ -61,6 +61,7 @@ public class TestBaseAdapter extends BaseAdapter<TestData, TestBaseAdapter.ItemV
     @Override
     public void onBindItemViewHolder(final ItemViewHolder holder, final int position) {
         final TestData data = getItemData(position);
+
         if (data != null) {
 //            String url = data.icon;
 ////            Glide.with(mContext).load(url).centerCrop().into(holder.userIcon);
@@ -87,7 +88,10 @@ public class TestBaseAdapter extends BaseAdapter<TestData, TestBaseAdapter.ItemV
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     Log.d("nzqcb", "onCheckedChanged: " + b);
 
-                    callBack.Call(data.id, b, holder.cb);
+
+                        callBack.Call(data.id, b, holder.cb);
+
+
                 }
             });
             holder.ll_dele.setOnClickListener(new View.OnClickListener() {

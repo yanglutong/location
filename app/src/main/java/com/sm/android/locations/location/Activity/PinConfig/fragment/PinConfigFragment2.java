@@ -43,6 +43,7 @@ import static com.sm.android.locations.location.App.App.context;
  */
 @SuppressLint("ValidFragment")
 public class PinConfigFragment2 extends BaseFragment implements View.OnClickListener {
+    private boolean isShow=false;
     private String name;
     View view;
     PinConfigViewPagerAdapter pinConfigAdapter;
@@ -63,16 +64,16 @@ public class PinConfigFragment2 extends BaseFragment implements View.OnClickList
     int sizeinit;//用來判斷是否添加成功的
     private DBManagerPinConfig dbManager;
 
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.what == 100001) {//无线正确
-                setAdapter();
-            }
-        }
-    };
+//
+//    private Handler handler = new Handler() {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            super.handleMessage(msg);
+//            if (msg.what == 100001) {//无线正确
+//                setAdapter();
+//            }
+//        }
+//    };
     PinConfigViewPagerAdapter.IDialogPinConfig dialogPinConfig = new PinConfigViewPagerAdapter.IDialogPinConfig() {
         @Override
         public void getPosition(String position, int index, String linename) {
@@ -108,6 +109,7 @@ public class PinConfigFragment2 extends BaseFragment implements View.OnClickList
 
     @Override
     public View initView() {
+        isShow=true;
         view = LayoutInflater.from(mContext).inflate(R.layout.activity_pin_config_viewpager_fragment, null);
         return view;
     }
@@ -127,39 +129,33 @@ public class PinConfigFragment2 extends BaseFragment implements View.OnClickList
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        }).start();
-        if (isVisibleToUser) {
-            // 相当于onResume()方法
-            Log.d("nzq", "onResume: " + "执行了1");
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Message message = new Message();
-                    Bundle bundle=new Bundle();
-                    bundle.putString("test", "0");
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-                    message.what = 100001;
-                }
-            }, 100);
-        } else {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Message message = new Message();
-                    Bundle bundle=new Bundle();
-                    bundle.putString("test", "0");
-                    message.setData(bundle);
-                    handler.sendMessage(message);
-                    message.what = 100001;
-                }
-            }, 100);
-
+        if (isVisibleToUser&&isShow) {
+//            // 相当于onResume()方法
+//            Log.d("nzq", "onResume: " + "执行了1");
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Message message = new Message();
+//                    Bundle bundle=new Bundle();
+//                    bundle.putString("test", "0");
+//                    message.setData(bundle);
+//                    handler.sendMessage(message);
+//                    message.what = 100001;
+//                }
+//            }, 100);
+//        } else {
+//            handler.postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Message message = new Message();
+//                    Bundle bundle=new Bundle();
+//                    bundle.putString("test", "0");
+//                    message.setData(bundle);
+//                    handler.sendMessage(message);
+//                    message.what = 100001;
+//                }
+//            }, 100);
+//
         }
     }
     private void setAdapter() {

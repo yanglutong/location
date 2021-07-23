@@ -27,6 +27,7 @@ import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.ZmBeanPdlbenan;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.ZmBeanbslbenan;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.Nzqzmbeandw;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.ZmBeanlinshi;
+import com.sm.android.locations.location.initData.dao.DeviceBean;
 
 /**
  * Created by Administrator on 2018/3/22 0022.
@@ -87,6 +88,7 @@ public class OrmHelper extends OrmLiteSqliteOpenHelper {
                 TableUtils.createTable(connectionSource, ZcBean.class);//注册码
                 TableUtils.createTable(connectionSource, AdminBean.class);//人员管理
                 TableUtils.createTable(connectionSource, LogBean.class);//日志
+                TableUtils.createTable(connectionSource, DeviceBean.class);//日志
 
 
             } catch (java.sql.SQLException e) {

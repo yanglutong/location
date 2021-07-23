@@ -100,5 +100,24 @@ public class MyUtils {
             }
         }
         return list;
+    } public static List<String> removeDuplicate3(List<String> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = list.size() - 1; j > i; j--) {
+                if (list.get(j).equals(list.get(i))) {
+                    list.remove(j);
+                }
+            }
+        }
+        return list;
+    }
+
+    //方法一：用JAVA自带的函数
+    public static boolean isNumeric(String str){
+        for (int i = str.length();--i>=0;){
+            if (!Character.isDigit(str.charAt(i))){
+                return false;
+            }
+        }
+        return true;
     }
 }

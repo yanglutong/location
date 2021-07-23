@@ -160,7 +160,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="系统带宽(M)"
+                        android:text="GPS状态"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -270,7 +270,7 @@
                         android:layout_alignBottom="@+id/tv_max"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:text="终端最大发射功率(dBm)"
+                        android:text="手机最大发射功率(dBm)"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -331,48 +331,48 @@
 
 
             </LinearLayout>
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="15dp"
-                android:layout_marginTop="10dp"
-                android:text="定位模式黑名单"
+<!--        <RelativeLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content">-->
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignParentLeft="true"-->
+<!--                android:layout_marginLeft="15dp"-->
+<!--                android:layout_marginTop="10dp"-->
+<!--                android:text="定位模式黑名单"-->
 
-                android:textColor="@color/black" />
-            <Button
-                android:id="@+id/bt_blacklist"
-                android:layout_width="65dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="@dimen/x246"
-                android:text="获取"
-                android:textSize="10dp" />
-        </RelativeLayout>
+<!--                android:textColor="@color/black" />-->
+<!--            <Button-->
+<!--                android:id="@+id/bt_blacklist"-->
+<!--                android:layout_width="65dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:layout_marginLeft="@dimen/x246"-->
+<!--                android:text="获取"-->
+<!--                android:textSize="10dp" />-->
+<!--        </RelativeLayout>-->
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+<!--            <RelativeLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginTop="20dp"
-                    android:text="定位模式"
-                    android:visibility="invisible" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_centerVertical="true"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:text="定位模式"-->
+<!--                    android:visibility="invisible" />-->
 
 
 
-            </RelativeLayout>
+<!--            </RelativeLayout>-->
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/ryimsi"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="15dp" />
+<!--            <androidx.recyclerview.widget.RecyclerView-->
+<!--                android:id="@+id/ryimsi"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginLeft="15dp" />-->
             <!--</LinearLayout>-->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -421,7 +421,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="工作模式"
+                        android:text="定位模式"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -448,7 +448,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="抓号周期(分钟)"
+                        android:text="采集周期(分钟)"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -475,7 +475,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="UE IMSI"
+                        android:text="射频输出功率"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -502,7 +502,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="测量值上报周期(毫秒)"
+                        android:text="接收增益"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -529,7 +529,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="UE最大功率发射开关"
+                        android:text="工作模式"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -542,11 +542,13 @@
                 </RelativeLayout>
 
                 <View
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/gray" />
 
                 <RelativeLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp">
@@ -556,7 +558,7 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentLeft="true"
                         android:layout_margin="5dp"
-                        android:text="UE最大发射功率(dBm)"
+                        android:text="信号发射功率(dBm)"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -574,348 +576,348 @@
                     android:background="@color/gray" />
             </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="20dp"
-            android:text="功率"
-            android:textColor="@color/black" />
-        <Button
-            android:id="@+id/bt_gonglv"
-            android:layout_width="65dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="@dimen/x246"
-            android:text="获取"
-            android:textSize="10dp" />
-    </RelativeLayout>
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content">-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentLeft="true"-->
+<!--            android:layout_marginLeft="15dp"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:text="功率"-->
+<!--            android:textColor="@color/black" />-->
+<!--        <Button-->
+<!--            android:id="@+id/bt_gonglv"-->
+<!--            android:layout_width="65dp"-->
+<!--            android:layout_height="40dp"-->
+<!--            android:layout_marginLeft="@dimen/x246"-->
+<!--            android:text="获取"-->
+<!--            android:textSize="10dp" />-->
+<!--    </RelativeLayout>-->
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
 
-                android:background="@drawable/corners_bg"
-                android:orientation="vertical">
-
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_marginBottom="5dp"
-                        android:text="接收增益"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_zy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="发射功率衰减"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_sj"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
+<!--                android:background="@drawable/corners_bg"-->
+<!--                android:orientation="vertical">-->
 
 
-            </LinearLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="20dp"
-                    android:text="随机接入"
-                    android:textColor="@color/black" />
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
 
-                <Button
-                    android:id="@+id/bt_sjjieru"
-                    android:layout_width="65dp"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="@dimen/x246"
-                    android:text="获取"
-                    android:textSize="10dp" />
-            </RelativeLayout>
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_marginStart="5dp"-->
+<!--                        android:layout_marginLeft="5dp"-->
+<!--                        android:layout_marginTop="5dp"-->
+<!--                        android:layout_marginEnd="5dp"-->
+<!--                        android:layout_marginRight="5dp"-->
+<!--                        android:layout_marginBottom="5dp"-->
+<!--                        android:text="接收增益"-->
+<!--                        android:textColor="@color/black" />-->
 
-                android:background="@drawable/corners_bg"
-                android:orientation="vertical">
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_zy"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
 
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="发射功率衰减"-->
+<!--                        android:textColor="@color/black" />-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="RRC连接请求次数:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_rrcnum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="RRC连接建立完成次数："
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_rrcsucess"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="RRC接入成功率："
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_rrcsucessnum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="获取IMSI个数："
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_imsiNum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="获取IMSI成功率："
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_imsiNumsucess"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-            </LinearLayout>
-            <RelativeLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_centerVertical="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginTop="20dp"
-                    android:text="同步"
-                    android:textColor="@color/black" />
-                <Button
-                    android:id="@+id/bt_tongbu"
-                    android:layout_width="65dp"
-                    android:layout_height="40dp"
-                    android:layout_marginLeft="@dimen/x246"
-                    android:text="获取"
-                    android:textSize="10dp" />
-            </RelativeLayout>
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_sj"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
 
 
-            <LinearLayout
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+<!--            </LinearLayout>-->
+<!--            <RelativeLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentLeft="true"-->
+<!--                    android:layout_marginLeft="15dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:text="随机接入"-->
+<!--                    android:textColor="@color/black" />-->
 
-                android:background="@drawable/corners_bg"
-                android:orientation="vertical">
+<!--                <Button-->
+<!--                    android:id="@+id/bt_sjjieru"-->
+<!--                    android:layout_width="65dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_marginLeft="@dimen/x246"-->
+<!--                    android:text="获取"-->
+<!--                    android:textSize="10dp" />-->
+<!--            </RelativeLayout>-->
 
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="同步类型:"
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_tbtype"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/gray" />
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_margin="5dp"
-                        android:text="同步状态："
-                        android:textColor="@color/black" />
-
-                    <TextView
-                        android:id="@+id/tv_tbzt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_margin="5dp"
-                        android:text="" />
-                </RelativeLayout>
+<!--                android:background="@drawable/corners_bg"-->
+<!--                android:orientation="vertical">-->
 
 
-            </LinearLayout>
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="RRC连接请求次数:"-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_rrcnum"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="RRC连接建立完成次数："-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_rrcsucess"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="RRC接入成功率："-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_rrcsucessnum"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="获取IMSI个数："-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_imsiNum"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="获取IMSI成功率："-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_imsiNumsucess"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+<!--            </LinearLayout>-->
+<!--            <RelativeLayout-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content">-->
+
+<!--                <TextView-->
+<!--                    android:layout_centerVertical="true"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentLeft="true"-->
+<!--                    android:layout_marginLeft="15dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:text="同步"-->
+<!--                    android:textColor="@color/black" />-->
+<!--                <Button-->
+<!--                    android:id="@+id/bt_tongbu"-->
+<!--                    android:layout_width="65dp"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_marginLeft="@dimen/x246"-->
+<!--                    android:text="获取"-->
+<!--                    android:textSize="10dp" />-->
+<!--            </RelativeLayout>-->
+
+
+<!--            <LinearLayout-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+
+<!--                android:background="@drawable/corners_bg"-->
+<!--                android:orientation="vertical">-->
+
+
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="同步类型:"-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_tbtype"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+
+<!--                <View-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:background="@color/gray" />-->
+
+<!--                <RelativeLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="5dp">-->
+
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentLeft="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="同步状态："-->
+<!--                        android:textColor="@color/black" />-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/tv_tbzt"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_alignParentRight="true"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:text="" />-->
+<!--                </RelativeLayout>-->
+
+
+<!--            </LinearLayout>-->
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

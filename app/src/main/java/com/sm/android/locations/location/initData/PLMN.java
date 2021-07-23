@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @date: 2021/6/23
  */
 public class PLMN {
-    public static ArrayList<PLMN> plmns;
+    public static ArrayList<PLMN> plmns=new ArrayList<>();
     private String plmn;
     private String down;
     private String up;

@@ -24,11 +24,11 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_margin="5dp"
-                android:text="设备号"
+                android:text="设备编号"
                 android:textColor="@color/black" />
 
             <TextView
-                android:id="@+id/tv_devicenumber"
+                android:id="@+id/tv_SN"
                 android:layout_width="@dimen/x55"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -36,7 +36,7 @@
                 android:text="11111" />
 
             <Button
-                android:id="@+id/bt_devicenumber"
+                android:id="@+id/bt_SN"
                 android:layout_width="65dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="@dimen/x246"
@@ -60,17 +60,17 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_margin="5dp"
-                android:text="硬件版本号"
+                android:text="设备MAC地址"
                 android:textColor="@color/black" />
             <TextView
-                android:id="@+id/tv_hardware"
+                android:id="@+id/tv_MAC"
                 android:layout_width="@dimen/x55"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/x176"
                 android:text="11111" />
             <Button
-                android:id="@+id/bt_hardware"
+                android:id="@+id/bt_MAC"
                 android:layout_width="65dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="@dimen/x246"
@@ -95,7 +95,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerInParent="true"
                 android:layout_margin="5dp"
-                android:text="软件版本"
+                android:text="软件版本号"
                 android:textColor="@color/black" />
 
 <!--            <TextView-->
@@ -106,14 +106,14 @@
 <!--                android:layout_margin="5dp"-->
 <!--                android:text="SM-BaiStation128D_TDD_FDD_R005B001SPC002" />-->
             <TextView
-                android:id="@+id/tv_software"
+                android:id="@+id/tv_FW"
                 android:layout_width="@dimen/x55"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/x176"
                 android:text="1111111" />
             <Button
-                android:id="@+id/bt_software"
+                android:id="@+id/bt_FW"
                 android:layout_width="65dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="@dimen/x246"
@@ -121,7 +121,10 @@
                 android:textSize="10dp" />
         </RelativeLayout>
 
-        <View
+
+
+
+       <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray" />
@@ -136,134 +139,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_margin="5dp"
-                android:text="SN号"
-                android:textColor="@color/black" />
-
-<!--            <TextView-->
-<!--                android:id="@+id/tv_sn"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_alignParentRight="true"-->
-<!--                android:layout_margin="5dp"-->
-<!--                android:text="" />-->
-            <TextView
-                android:id="@+id/tv_sn"
-                android:layout_width="@dimen/x55"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/x176"
-
-                android:text="11111" />
-            <Button
-                android:id="@+id/bt_sn"
-                android:layout_width="65dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="@dimen/x246"
-                android:text="获取"
-                android:textSize="10dp" />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="5dp"
-                android:text="MAC地址"
-                android:textColor="@color/black" />
-
-<!--            <TextView-->
-<!--                android:id="@+id/tv_mac"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_alignParentRight="true"-->
-<!--                android:layout_margin="5dp"-->
-<!--                android:text="" />-->
-            <TextView
-                android:id="@+id/tv_mac"
-                android:layout_width="@dimen/x55"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/x176"
-                android:text="11111" />
-            <Button
-                android:id="@+id/bt_mac"
-                android:layout_width="65dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="@dimen/x246"
-                android:text="获取"
-                android:textSize="10dp" />
-
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp">
-
-            <TextView
-                android:layout_centerVertical="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="5dp"
-                android:text="UBOOT版本号"
-                android:textColor="@color/black" />
-
-<!--            <TextView-->
-<!--                android:id="@+id/tvuboot"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_alignParentRight="true"-->
-<!--                android:layout_margin="5dp"-->
-<!--                android:text="" />-->
-            <TextView
-                android:id="@+id/tvuboot"
-                android:layout_width="@dimen/x55"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="@dimen/x176"
-                android:text="11111" />
-            <Button
-                android:id="@+id/bt_boot"
-                android:layout_width="65dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="@dimen/x246"
-                android:text="获取"
-                android:textSize="10dp" />
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/gray" />
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_margin="5dp"
-                android:text="板卡温度(℃)"
+                android:text="板卡温度"
                 android:textColor="@color/black" />
 
 <!--            <TextView-->
@@ -274,14 +150,172 @@
 <!--                android:layout_margin="5dp"-->
 <!--                android:text="" />-->
             <TextView
-                android:id="@+id/tvboard"
+                android:id="@+id/TMP"
                 android:layout_width="@dimen/x55"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/x176"
                 android:text="11111" />
             <Button
-                android:id="@+id/bt_board"
+                android:id="@+id/bt_TMP"
+                android:layout_width="65dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="@dimen/x246"
+                android:text="获取"
+                android:textSize="10dp" />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="5dp"
+                android:text="射频状态"
+                android:textColor="@color/black" />
+
+            <!--            <TextView-->
+            <!--                android:id="@+id/tvboard"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignParentRight="true"-->
+            <!--                android:layout_margin="5dp"-->
+            <!--                android:text="" />-->
+            <TextView
+                android:id="@+id/RF"
+                android:layout_width="@dimen/x55"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x176"
+                android:text="11111" />
+            <Button
+                android:id="@+id/bt_RF"
+                android:layout_width="65dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="@dimen/x246"
+                android:text="获取"
+                android:textSize="10dp" />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="5dp"
+                android:text="空口同步状态"
+                android:textColor="@color/black" />
+
+            <!--            <TextView-->
+            <!--                android:id="@+id/tvboard"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignParentRight="true"-->
+            <!--                android:layout_margin="5dp"-->
+            <!--                android:text="" />-->
+            <TextView
+                android:id="@+id/CNM"
+                android:layout_width="@dimen/x55"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x176"
+                android:text="11111" />
+            <Button
+                android:id="@+id/bt_CNM"
+                android:layout_width="65dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="@dimen/x246"
+                android:text="获取"
+                android:textSize="10dp" />
+        </RelativeLayout><View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="5dp"
+                android:text="同步状态"
+                android:textColor="@color/black" />
+
+            <!--            <TextView-->
+            <!--                android:id="@+id/tvboard"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignParentRight="true"-->
+            <!--                android:layout_margin="5dp"-->
+            <!--                android:text="" />-->
+            <TextView
+                android:id="@+id/SYNC"
+                android:layout_width="@dimen/x55"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x176"
+                android:text="11111" />
+            <Button
+                android:id="@+id/bt_SYNC"
+                android:layout_width="65dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="@dimen/x246"
+                android:text="获取"
+                android:textSize="10dp" />
+        </RelativeLayout><View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_margin="5dp"
+                android:text="干扰测量"
+                android:textColor="@color/black" />
+
+            <!--            <TextView-->
+            <!--                android:id="@+id/tvboard"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_alignParentRight="true"-->
+            <!--                android:layout_margin="5dp"-->
+            <!--                android:text="" />-->
+            <TextView
+                android:id="@+id/RIP"
+                android:layout_width="@dimen/x55"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/x176"
+                android:text="11111" />
+            <Button
+                android:id="@+id/bt_RIP"
                 android:layout_width="65dp"
                 android:layout_height="40dp"
                 android:layout_marginLeft="@dimen/x246"

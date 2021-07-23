@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class MyLog {
     public static void i(String tag, String msg){
-        Log.i("ylt", "  "+msg);
+        Log.i(tag, "  "+msg);
     }
     public static void e(String tag, String msg){
         Log.e(tag, "  "+msg);

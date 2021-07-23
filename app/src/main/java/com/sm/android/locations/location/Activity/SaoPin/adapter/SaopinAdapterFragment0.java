@@ -78,8 +78,10 @@ public class SaopinAdapterFragment0 extends RecyclerView.Adapter<SaopinAdapterFr
         holder.ll_dele.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
+                if(!holder.cb_deful.isChecked()){
+                    ToastUtils.showToast("请先选中该频点");
+                    return;
+                }
                 final Dialog dialog = new Dialog(context, R.style.menuDialogStyleDialogStyle);
                 View inflate = LayoutInflater.from(context).inflate(R.layout.dialog_item_title, null);
                 TextView tv_title = inflate.findViewById(R.id.tv_title);

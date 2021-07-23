@@ -29,6 +29,7 @@ import com.sm.android.locations.location.Utils.MainUtils.MainUtils2;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.SpBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.ZmBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagerZM;
+import com.sm.android.locations.location.initData.MyLog;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -100,7 +101,7 @@ public class DialogUtils {
         ll_device.setVisibility(View.VISIBLE);
         Log.d("cb_device", "SaoPinDialog: " + sb);
         if (sb == 1) {
-            cb_device.setText("设备1扫描");
+            cb_device.setText("设备扫描");
         }
         if (sb == 2) {
             cb_device.setText("设备2扫描");
@@ -151,12 +152,13 @@ public class DialogUtils {
 //                    tv1_yy.setText(yy);
                             String TAG = "数据判断";
                             for (int i = 0; i < gsmInfoList.size(); i++) {
-                                if (gsmInfoList.get(i).getPlmn().equals(plmn)) {
-                                    list1.add(gsmInfoList.get(i));
-                                } else {
-                                    list2.add(gsmInfoList.get(i));
+                                if(gsmInfoList.get(i).getPlmn()!=null){
+                                    if (gsmInfoList.get(i).getPlmn().equals(plmn)) {
+                                        list1.add(gsmInfoList.get(i));
+                                    } else {
+                                        list2.add(gsmInfoList.get(i));
+                                    }
                                 }
-
                             }
                             if (list1.size() > 0 && list2.size() == 0) {//只有一个运营商1
                                 spBean1= list1.get(0);
@@ -395,36 +397,36 @@ public class DialogUtils {
 
         if (tf.equals("TDD")) {
             cb_tdd.setText("移动TDD");
-            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_tdd.setText("不重启");
+//            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_tdd.setText("不重启");
 
             cb_fdd.setText("移动FDD");
-            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_fdd.setText("需重启");
+//            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_fdd.setText("需重启");
 
             cb_lt.setText("联     通 ");
-            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_lt.setText("需重启");
+//            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_lt.setText("需重启");
 
             cb_ds.setText("电     信 ");
-            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_ds.setText("需重启");
+//            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_ds.setText("需重启");
         }
         if (tf.equals("FDD")) {
             cb_tdd.setText("移动TDD");
-            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_tdd.setText("需重启");
+//            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_tdd.setText("需重启");
 
             cb_fdd.setText("移动FDD");
-            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_fdd.setText("不重启");
+//            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_fdd.setText("不重启");
 
             cb_lt.setText("联     通 ");
-            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_lt.setText("不重启");
+//            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_lt.setText("不重启");
             cb_ds.setText("电     信 ");
-            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_ds.setText("不重启");
+//            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_ds.setText("不重启");
         }
         cb_tdd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -732,12 +734,13 @@ public class DialogUtils {
 //                    tv1_yy.setText(yy);
                             String TAG = "数据判断";
                             for (int i = 0; i < gsmInfoList.size(); i++) {
-                                if (gsmInfoList.get(i).getPlmn().equals(plmn)) {
-                                    list1.add(gsmInfoList.get(i));
-                                } else {
-                                    list2.add(gsmInfoList.get(i));
+                                if(!"".equals(gsmInfoList.get(i).getPlmn())&&gsmInfoList.get(i).getPlmn()!=null){
+                                    if (gsmInfoList.get(i).getPlmn().equals(plmn)) {
+                                        list1.add(gsmInfoList.get(i));
+                                    } else {
+                                        list2.add(gsmInfoList.get(i));
+                                    }
                                 }
-
                             }
                             if (list1.size() > 0 && list2.size() == 0) {//只有一个运营商1
                                 spBean1= list1.get(0);
@@ -979,36 +982,36 @@ public class DialogUtils {
 
         if (tf.equals("TDD")) {
             cb_tdd.setText("移动TDD");
-            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_tdd.setText("不重启");
+//            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_tdd.setText("不重启");
 
             cb_fdd.setText("移动FDD");
-            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_fdd.setText("需重启");
+//            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_fdd.setText("需重启");
 
             cb_lt.setText("联     通 ");
-            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_lt.setText("需重启");
+//            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_lt.setText("需重启");
 
             cb_ds.setText("电     信 ");
-            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_ds.setText("需重启");
+//            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_ds.setText("需重启");
         }
         if (tf.equals("FDD")) {
             cb_tdd.setText("移动TDD");
-            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
-            tv_tdd.setText("需重启");
+//            iv_tdd.setBackground(context.getResources().getDrawable(R.mipmap.rest));
+//            tv_tdd.setText("需重启");
 
             cb_fdd.setText("移动FDD");
-            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_fdd.setText("不重启");
+//            iv_fdd.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_fdd.setText("不重启");
 
             cb_lt.setText("联     通 ");
-            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_lt.setText("不重启");
+//            iv_lt.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_lt.setText("不重启");
             cb_ds.setText("电     信 ");
-            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.norest));
-            tv_ds.setText("不重启");
+//            iv_ds.setBackground(context.getResources().getDrawable(R.mipmap.norest));
+//            tv_ds.setText("不重启");
         }
         cb_tdd.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -1062,7 +1065,7 @@ public class DialogUtils {
                 if (sb == 1) {
                     if (cb_phone.isChecked()) {//如果手机扫描
                         if (cb_yy1.isChecked()) {//如过选择运营商1
-                            Log.d("cb_yy1true", "onClick: "+spBean1.toString());
+//                            Log.d("cb_yy1true", "onClick: "+spBean1.toString());
                             if (spBean1 != null) {
 //                                ToastUtils.showToast("运营商1有数据");
                                 if (finalGsmInfoList == null) {
@@ -1925,6 +1928,7 @@ public class DialogUtils {
 //                    bean.setMcc(cellIdentityLte.getMcc());
                     //上行频点
                     String mobileNetworkOperator1 = cellIdentityLte.getMobileNetworkOperator();
+                    MyLog.i("kkk123", mobileNetworkOperator);
                     String yy = MainUtils2.YY(mobileNetworkOperator1);
                     if (yy.equals("移动")) {
                         bean.setUp("255");

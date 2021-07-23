@@ -16,6 +16,7 @@ import com.sm.android.locations.location.Base.BasePresenter;
 import com.sm.android.locations.location.Base.BaseView;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.AddPararBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.ZmBeanGKTongji;
+import com.sm.android.locations.location.initData.CallBackSetState;
 import com.sm.android.locations.location.initData.TCPServer;
 
 import java.util.List;
@@ -55,9 +56,12 @@ public class SOSVIEW {
          * @param sbzhuangtai // 设备的状态
          */
         void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer);//手动定位
+        void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer);//手动定位
+        void setZy(TCPServer tcpServer,String zy);//设置增益
 
 
         void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack);//手动建立小区
+        void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack);//手动建立小区
 
         void stopdw(final int i, final Context context, String sbzhuangtai,TCPServer tcpServer);//停止定位
 
@@ -69,11 +73,12 @@ public class SOSVIEW {
 
         void setIMSIshow2(Message msg, TextView tv_imsi1_dw);
 
-        void spbuilsshow(Context context, int device, int yy, String tf1, String tf2);
+        void spbuilsshow(Context context, int device, int yy, String tf1, String tf2, CallBackSetState c);
 
-        void spbuils(Context context, int device, int yy, String tf1, String tf2);
+        void spbuils(Context context, int device, int yy, String tf1, String tf2,CallBackSetState c);//扫频
 
         void setStart(int device, final boolean b, final int maintype, final String sb1, String sb2, final String sp1, final String sp2, final Context context, final String tf1, final String tf2, int restart, boolean phoneFalg);
+        void setStartYy(TCPServer tcpServer,int device, final boolean b, String sb, final String sp, final Context context,  final String tf, boolean phoneFalg);
 
         void saopinjianlixiaoqu(Context context, int device, String tf, String down);
 

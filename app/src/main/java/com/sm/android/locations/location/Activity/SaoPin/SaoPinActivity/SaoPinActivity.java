@@ -13,9 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.sm.android.locations.location.Activity.Main.Adapter.SaopinListAdapter;
+import com.sm.android.locations.location.Activity.Main.MainActivity;
 import com.sm.android.locations.location.Base.BaseActivity;
 import com.sm.android.locations.location.R;
+import com.sm.android.locations.location.Utils.ToastUtils;
 import com.sm.android.locations.location.Utils.UtilsView;
+import com.sm.android.locations.location.initData.MyLog;
+import com.sm.android.locations.location.sos.SOSActivity;
 
 import java.io.UnsupportedEncodingException;
 
@@ -59,6 +63,18 @@ public class SaoPinActivity extends BaseActivity implements View.OnClickListener
         Log.d("SaoPinCallbackList", "init: " + SPBEANLIST1.toString());
         Intent intent = getIntent();
         String type = intent.getStringExtra("type");
+
+        MyLog.e("SaoPin", type);
+        MyLog.e("SaoPin", "xqck"+SOSActivity.xqck.toString());
+
+        if(type.equals("3")){
+            if(SOSActivity.xqck.size()>0){
+                UtilsView.setViewVisibility(this, layout, title, imageView, "设备1小区信息", false, iv_finish, true);
+                SaopinListAdapter saopinListAdapter = new SaopinListAdapter(SaoPinActivity.this,SOSActivity.xqck);
+                ry.setAdapter(saopinListAdapter);
+            }
+
+        }
         if (type.equals("1")) {
             UtilsView.setViewVisibility(this, layout, title, imageView, "设备1小区信息", false, iv_finish, true);
 
@@ -75,6 +91,7 @@ public class SaoPinActivity extends BaseActivity implements View.OnClickListener
 //
 //                SPBEANLIST1.add(spBean);
 //            }
+
             SaopinListAdapter saopinListAdapter = new SaopinListAdapter(SaoPinActivity.this, SPBEANLIST1);
             ry.setAdapter(saopinListAdapter);
         }

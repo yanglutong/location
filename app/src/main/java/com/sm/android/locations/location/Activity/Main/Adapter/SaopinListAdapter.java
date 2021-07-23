@@ -17,11 +17,12 @@ import com.sm.android.locations.location.R;
 import com.sm.android.locations.location.Utils.MainUtils.MainUtils;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.SpBean;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SaopinListAdapter extends RecyclerView.Adapter<SaopinListAdapter.ViewHolder> {
 
-    private List<SpBean> spbeanlist1;
+    private List<SpBean> spbeanlist1=new ArrayList<>();
     private Context context;
     int add;
 
@@ -62,8 +63,8 @@ public class SaopinListAdapter extends RecyclerView.Adapter<SaopinListAdapter.Vi
             }
         });
 //        tv_band, tv_EARFCN, tv_rsrp, tv_rsrq, tv_plmn, tv_tac, tv_cid, tv_pci;
-        String band = MainUtils.getBand(Integer.parseInt(spbeanlist1.get(position).getDown()));
-        holder.tv_band.setText("" + band);
+//        String band = MainUtils.getBand(Integer.parseInt(spbeanlist1.get(position).getDown()));
+        holder.tv_band.setText("" + spbeanlist1.get(position).getBand()+"");
         holder.tv_EARFCN.setText("" + spbeanlist1.get(position).getDown());
         if (spbeanlist1.get(position).getRsrp() == 0) {
             holder.tv_rsrp.setText("-");
@@ -81,7 +82,7 @@ public class SaopinListAdapter extends RecyclerView.Adapter<SaopinListAdapter.Vi
             holder.tv_rsrq.setText("" + v1);
         }
         //
-        if (spbeanlist1.get(position).getPlmn().equals("0")) {
+        if ("0".equals(spbeanlist1.get(position).getPlmn())) {
             holder.tv_plmn.setText("-");
         } else {
             holder.tv_plmn.setText("" + spbeanlist1.get(position).getPlmn());

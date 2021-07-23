@@ -52,10 +52,14 @@ import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagerZM;
 import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagerZMGK;
 import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagersaopin;
 import com.sm.android.locations.location.Utils.ToastUtils;
+import com.sm.android.locations.location.initData.CallBackSetState;
 import com.sm.android.locations.location.initData.CommandUtils;
 import com.sm.android.locations.location.initData.MyLog;
 import com.sm.android.locations.location.initData.PLMN;
+import com.sm.android.locations.location.initData.SocketSend;
 import com.sm.android.locations.location.initData.TCPServer;
+import com.sm.android.locations.location.initData.dao.DBManagerDevice;
+import com.sm.android.locations.location.initData.dao.DeviceBean;
 import com.sm.android.locations.location.viewpagermain.NewMainPager.SendUtilsNew;
 
 import java.net.DatagramPacket;
@@ -119,7 +123,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     public void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer) {
         Log.d(TAG, "startSD: " + device + "tf==" + tf + "---" + spinnerDown);
         if (device == 1) {
-            if (TextUtils.isEmpty(tf)) {
+            if (tf.equals("")) {
                 ToastUtils.showToast("设备未连接");
                 return;
             }
@@ -131,6 +135,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 ToastUtils.showToast("请检查当前wifi连接");
                 return;
             }
+
 
             String yy = "";
             String sb1zhishi = "";
@@ -215,12 +220,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             bt_confirm.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    SOSActivity.sbZhuangTai="正在启动设备";
                                     sendBlackListRun(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer);
-
-
                                     dialog.dismiss();
                                     dialog.cancel();
+
 
                                 }
                             });
@@ -256,11 +259,113 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
         }
     }
 
+    @Override
+    public void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer) {
+        Log.d(TAG, "startSD: " + device + "tf==" + tf + "---" + spinnerDown);
+        if (device == 1) {
+            if (tf.equals("")) {
+                ToastUtils.showToast("设备未连接");
+                return;
+            }
+//            if(!"WIFI连接:正常".equals(tv)){
+//                ToastUtils.showToast("请检查当前wifi连接");
+//                return;
+//            }
+
+
+            String yy = "";
+            String sb1zhishi = "";
+            List<PinConfigBean> pinConfigBeans = null;
+            DBManagerPinConfig dbManagerPinConfig = null;
+            try {
+                dbManagerPinConfig = new DBManagerPinConfig(context);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(spinnerDown)); //查询对应的频点
+                yy = pinConfigBeans.get(0).getYy();
+                sb1zhishi = pinConfigBeans.get(0).getTf();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            DBManagerAddParam dbManagerAddParam = null;
+            List<AddPararBean> dataAll = null;//首页IMSI列表的数据
+            List<AddPararBean> listImsiListTrue = null;//装载已经被选中的imsi
+            /* if (sb1zhishi.equals(tf)) {//判断是tdd还是fdd 是同一个制式的情况下*/
+            try {
+                try {
+                    dbManagerAddParam = new DBManagerAddParam(context);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    dataAll = dbManagerAddParam.getDataAll();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                listImsiListTrue = new ArrayList<>();
+                if (dataAll.size() > 0) {
+                    for (int i = 0; i < dataAll.size(); i++) {
+                        if (dataAll.get(i).isCheckbox() == true) {
+                            dataAll.get(i).setSb("");
+                            listImsiListTrue.add(dataAll.get(i));
+                        }
+                    }
+                    List<Integer> list1size = new ArrayList<>();
+                    if (listImsiListTrue.size() > 0) {
+                        for (int i = 1; i < listImsiListTrue.size() + 1; i++) {
+
+                            list1size.add(i);
+                        }
+//                            viewS.setpararBeansList1(listImsiListTrue);
+                    }
+                }
+                if(listImsiListTrue.size()>0){
+                    MyLog.e("uuu", "imsi :"+listImsiListTrue.get(0).getImsi());
+                }
+                List<AddPararBean> sendListBlack = null;
+                sendListBlack = new ArrayList<>();
+//                        Log.d(TAG, "sendBlackList:移动 ");
+                if (listImsiListTrue.size() > 0 && listImsiListTrue != null) {
+                    for (int i = 0; i < listImsiListTrue.size(); i++) {
+                        MyLog.e("uuu", "选中的imsi运营商："+listImsiListTrue.get(i).getYy());
+                        if (listImsiListTrue.get(i).getYy().equals(yy)) {
+                            sendListBlack.add(listImsiListTrue.get(i));
+                        }
+                    }
+                }
+                if (sendListBlack.size() > 0 && sendListBlack != null) {
+//                                Log.d(TAG, "sendBlackList: " + sendListBlack);
+                    if (sendListBlack.size() > 20) {
+                        ToastUtils.showToast("符合条件的黑名单列表大于20");
+                    } else {
+                        final List<AddPararBean> finalSendListBlack = sendListBlack;
+                        final List<AddPararBean> finalListImsiListTrue = listImsiListTrue;
+                                sendBlackListRunSaoPin(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer);
+                    }
+//
+                } else {
+                    ToastUtils.showToast("没有符合条件的IMSI");
+                }
+
+            } catch (Exception e) {
+            }
+            /*}*/
+        }
+    }
+
+    @Override
+    public void setZy(TCPServer tcpServer,String zy) {
+        if(tcpServer!=null){
+            tcpServer.sendPost(CommandUtils.setZy(zy));
+        }
+    }
+
 
     @Override
     public void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack) {
         if (i == 1) {
-//
                     List<PinConfigBean> pinConfigBeans = null;//查询频点的集合
                     DBManagerPinConfig dbManagerPinConfig = null;//频点配置类
                     try {
@@ -313,24 +418,288 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             Integer.parseInt(forid.getTac())+ Integer.parseInt(forid.getCid()));
                     DOWNPIN1 = pinConfigBeans.get(0).getDown() + "";//将下行频点赋值给成员变量
 
+            try {
+                DBManagerDevice device = new DBManagerDevice(context);
+                List<DeviceBean> list = device.getDeviceBeans();
+                if(list.size()>0){//用户设置了接受增益就用用户的
+
+
+
+
+                    String zy="35";//默认35增益
+//                    if(!CommandUtils.zyType.equals("")){
+//                        zy=CommandUtils.zyType;
+//                    }
+                    MyLog.e("SOSPersentdeviceBean", zy);
+                    DeviceBean deviceBean = list.get(list.size()-1);
+                    MyLog.e("SOSPersentdeviceBean", deviceBean.toString());
 
 
                     PLMN.setPlmns(new PLMN(pinConfigBeans.get(0).getPlmn(), pinConfigBeans.get(0).getDown() + "", pinConfigBeans.get(0).getUp() + "",
-                    forid.getTac(), forid.getPci(), pinConfigBeans.get(0).getBand() + "", forid.getCid()));//将要发送的小区参数保存起来用于判断是否设置成功
+                            deviceBean.getTac(), deviceBean.getPci(), pinConfigBeans.get(0).getBand() + "", deviceBean.getCi()));//将要发送的小区参数保存起来用于判断是否设置成功
 
 
 
 
 
-            StringBuffer xq = CommandUtils.setXq(pinConfigBeans.get(0).getPlmn()+"", forid.getTac()+"", pinConfigBeans.get(0).getDown()+"", pinConfigBeans.get(0).getUp()+"", forid.getPci()+"", pinConfigBeans.get(0).getBand()+"", forid.getCid()+"");
+                    StringBuffer xq = CommandUtils.setXq(pinConfigBeans.get(0).getPlmn()+"", deviceBean.getTac()+"", pinConfigBeans.get(0).getDown()+"", pinConfigBeans.get(0).getUp()+"", deviceBean.getPci()+"", pinConfigBeans.get(0).getBand()+"", zy,deviceBean.getCi()+"");
                     String header = com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.xqType,xq.toString()));
-            //            //设置黑名单
-            List<AddPararBean> beans = com.sm.android.locations.location.initData.MyUtils.removeDuplicate2(sendListBlack);
-            StringBuffer stringBuffer = CommandUtils.setBlackList(beans);
-            CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
+                    //            //设置黑名单
+                    List<AddPararBean> beans = com.sm.android.locations.location.initData.MyUtils.removeDuplicate2(sendListBlack);
+                    StringBuffer stringBuffer = CommandUtils.setBlackList(beans);
+                    CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
 
-            MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
-            tcpServer.sendPost(header);//设置工作参数
+                    MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
+//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
+                    tcpServer.sendPost(header);//设置工作参数
+                }else{
+                    String zy="35";//默认使用最高增益
+//                    if(!CommandUtils.zyType.equals("")){
+//                        zy=CommandUtils.zyType;
+//                    }
+                    MyLog.e("SOSPersentdeviceBean", zy);
+                    PLMN.setPlmns(new PLMN(pinConfigBeans.get(0).getPlmn(), pinConfigBeans.get(0).getDown() + "", pinConfigBeans.get(0).getUp() + "",
+                            forid.getTac(), forid.getPci(), pinConfigBeans.get(0).getBand() + "", forid.getCid()+""));//将要发送的小区参数保存起来用于判断是否设置成功
+
+
+                    StringBuffer xq = CommandUtils.setXq(pinConfigBeans.get(0).getPlmn()+"", forid.getTac()+"", pinConfigBeans.get(0).getDown()+"", pinConfigBeans.get(0).getUp()+"", forid.getPci()+"", pinConfigBeans.get(0).getBand()+"", zy,forid.getCid()+"");
+                    String header = com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.xqType,xq.toString()));
+                    //            //设置黑名单
+                    List<AddPararBean> beans = com.sm.android.locations.location.initData.MyUtils.removeDuplicate2(sendListBlack);
+                    StringBuffer stringBuffer = CommandUtils.setBlackList(beans);
+                    CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
+
+                    MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
+                    tcpServer.sendPost(header);//设置工作参数
+//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        if (i == 2) {
+            new Thread(new Runnable() {
+                @SuppressLint("LongLogTag")
+                @Override
+                public void run() {
+                    List<PinConfigBean> pinConfigBeans = null;
+                    DBManagerPinConfig dbManagerPinConfig = null;
+                    try {
+                        dbManagerPinConfig = new DBManagerPinConfig(context);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (TextUtils.isEmpty(spinnerS1)) {
+                        ToastUtils.showToast("设备2频点不能为空");
+                        return;
+                    }
+                    try {
+                        pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(spinnerS1)); //查询对应的频点
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Conmmunit01Bean forid = null;
+                    DBManager01 dbManager01 = null;
+                    try {
+                        dbManager01 = new DBManager01(context);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        forid = dbManager01.forid(2);  //查询小区1
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (pinConfigBeans == null) {
+//                    ToastUtils.showToast("频点配置错误");
+//                    Set1StatusBar("频点配置错误");
+//                        viewS.buildSdError("频点配置错误", 1);
+                    }
+                    if (forid == null) {
+//                    ToastUtils.showToast("小区1配置错误");
+//                    Set1StatusBar("小区1配置错误");
+//                        viewS.buildSdError("小区1配置错误", 1);
+                        return;
+                    }
+                    DatagramSocket socket = null;
+                    InetAddress address = null;//你本机的ip地址
+                    Log.e("znzq", "run: nzqsend");
+
+//        int ulEarfcn,int dlEarfcn,String PLMN, int band,int PCI,int TAC
+                    String s = setxq.setXq(
+                            pinConfigBeans.get(0).getUp(),
+                            pinConfigBeans.get(0).getDown(),
+                            pinConfigBeans.get(0).getPlmn(),
+                            pinConfigBeans.get(0).getBand(),
+                            Integer.parseInt(forid.getPci()),
+                            Integer.parseInt(forid.getTac()), Integer.parseInt(forid.getCid()));
+//                Log.d(TAG, "run: " + s);
+//                byte[] outputData = MainUtilsThread.hexStringToByteArray(setxq.setXq(
+//                        pinConfigBeans.get(0).getUp(),
+//                        pinConfigBeans.get(0).getDown(),
+//                        pinConfigBeans.get(0).getPlmn(),
+//                        pinConfigBeans.get(0).getBand(),
+//                        Integer.parseInt(forid.getPci()),
+//                        Integer.parseInt(forid.getTac()), Integer.parseInt(forid.getCid())));
+
+                    byte[] outputData = MainUtilsThread.hexStringToByteArray(setxq.setXq(
+                            pinConfigBeans.get(0).getUp(),
+                            pinConfigBeans.get(0).getDown(),
+                            pinConfigBeans.get(0).getPlmn(),
+                            pinConfigBeans.get(0).getBand(),
+                            Integer.parseInt(forid.getPci()),
+                            Integer.parseInt(forid.getTac()), Integer.parseInt(forid.getCid())));//4294967295   //222222222l   //  268435455
+                    DOWNPIN2 = pinConfigBeans.get(0).getDown() + "";
+                    try {
+                        socket = new DatagramSocket();
+                        address = InetAddress.getByName(IP2);
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    } catch (SocketException e) {
+                        e.printStackTrace();
+                    }
+                    ;
+                    DatagramPacket outputPacket = new DatagramPacket(outputData, outputData.length, address, 3345);
+                    Log.e("startLocation1s建立小区1", "run: sendsocket端口号" + outputPacket.getPort() + "Ip地址:" + outputPacket.getAddress().toString() + "数据:" + outputPacket.getData());
+
+                    try {
+                        if (sb1.equals("定位中")) {
+
+                        } else {
+                            //                                    socket.send(outputPacket);
+                            DS.send(outputPacket);
+                            Log.e("socketstartLocation1s建立小区1", "run: sendsocket端口号" + outputPacket.getPort() + "Ip地址:" + outputPacket.getAddress().toString() + "数据:" + outputPacket.getData());
+
+                        }
+
+//                    interrupted();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }).start();
+        }
+
+    }
+ @Override
+    public void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack) {
+        if (i == 1) {
+                    List<PinConfigBean> pinConfigBeans = null;//查询频点的集合
+                    DBManagerPinConfig dbManagerPinConfig = null;//频点配置类
+                    try {
+                        dbManagerPinConfig = new DBManagerPinConfig(context);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (TextUtils.isEmpty(spinnerS1)) {
+                        ToastUtils.showToast("设备1频点不能为空");
+                        return;
+                    }
+                    try {
+                        pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(spinnerS1)); //查询对应的频点
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    Conmmunit01Bean forid = null;
+                    DBManager01 dbManager01 = null;
+                    try {
+                        dbManager01 = new DBManager01(context);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        forid = dbManager01.forid(1);  //查询小区1
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    if (pinConfigBeans == null) {
+                      ToastUtils.showToast("频点配置错误");
+                        return;
+                    }
+                    if (forid == null) {
+                    ToastUtils.showToast("小区1配置错误");
+                        return;
+                    }
+                    String s = setxq.setXq(
+                            pinConfigBeans.get(0).getUp(),
+                            pinConfigBeans.get(0).getDown(),
+                            pinConfigBeans.get(0).getPlmn(),
+                            pinConfigBeans.get(0).getBand(),
+                            Integer.parseInt(forid.getPci()),
+                            Integer.parseInt(forid.getTac()), Integer.parseInt(forid.getCid()));
+                    MyLog.e("uuu", "sos   "+s);
+                    MyLog.e("uuu", ""+pinConfigBeans.get(0).getUp()+
+                            pinConfigBeans.get(0).getDown()+
+                            pinConfigBeans.get(0).getPlmn()+
+                            "band"+pinConfigBeans.get(0).getBand()+"pci"+
+                            Integer.parseInt(forid.getPci())+
+                            Integer.parseInt(forid.getTac())+ Integer.parseInt(forid.getCid()));
+                    DOWNPIN1 = pinConfigBeans.get(0).getDown() + "";//将下行频点赋值给成员变量
+            try {
+                DBManagerDevice device = new DBManagerDevice(context);
+                List<DeviceBean> list = device.getDeviceBeans();
+                if(list.size()>0){//用户设置了接受增益就用用户的
+
+
+
+
+                    String zy="35";//默认35增益
+//                    if(!CommandUtils.zyType.equals("")){
+//                        zy=CommandUtils.zyType;
+//                    }
+                    MyLog.e("SOSPersentdeviceBean", zy);
+                    DeviceBean deviceBean = list.get(list.size()-1);
+                    MyLog.e("SOSPersentdeviceBean", deviceBean.toString());
+
+
+                    PLMN.setPlmns(new PLMN(pinConfigBeans.get(0).getPlmn(), pinConfigBeans.get(0).getDown() + "", pinConfigBeans.get(0).getUp() + "",
+                            deviceBean.getTac(), deviceBean.getPci(), pinConfigBeans.get(0).getBand() + "", deviceBean.getCi()));//将要发送的小区参数保存起来用于判断是否设置成功
+
+
+
+
+
+                    StringBuffer xq = CommandUtils.setXq(pinConfigBeans.get(0).getPlmn()+"", deviceBean.getTac()+"", pinConfigBeans.get(0).getDown()+"", pinConfigBeans.get(0).getUp()+"", deviceBean.getPci()+"", pinConfigBeans.get(0).getBand()+"", zy,deviceBean.getCi()+"");
+                    String header = com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.xqType,xq.toString()));
+                    //            //设置黑名单
+                    List<AddPararBean> beans = com.sm.android.locations.location.initData.MyUtils.removeDuplicate2(sendListBlack);
+                    StringBuffer stringBuffer = CommandUtils.setBlackList(beans);
+                    CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
+
+                    MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
+//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
+
+                    tcpServer.sendPost(header);//设置工作参数
+                }else{
+                    String zy="35";//默认使用最高增益
+//                    if(!CommandUtils.zyType.equals("")){
+//                        zy=CommandUtils.zyType;
+//                    }
+                    MyLog.e("SOSPersentdeviceBean", zy);
+                    PLMN.setPlmns(new PLMN(pinConfigBeans.get(0).getPlmn(), pinConfigBeans.get(0).getDown() + "", pinConfigBeans.get(0).getUp() + "",
+                            forid.getTac(), forid.getPci(), pinConfigBeans.get(0).getBand() + "", forid.getCid()+""));//将要发送的小区参数保存起来用于判断是否设置成功
+
+
+                    StringBuffer xq = CommandUtils.setXq(pinConfigBeans.get(0).getPlmn()+"", forid.getTac()+"", pinConfigBeans.get(0).getDown()+"", pinConfigBeans.get(0).getUp()+"", forid.getPci()+"", pinConfigBeans.get(0).getBand()+"", zy,forid.getCid()+"");
+                    String header = com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.xqType,xq.toString()));
+                    //            //设置黑名单
+                    List<AddPararBean> beans = com.sm.android.locations.location.initData.MyUtils.removeDuplicate2(sendListBlack);
+                    StringBuffer stringBuffer = CommandUtils.setBlackList(beans);
+                    CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
+
+                    MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
+                    tcpServer.sendPost(header);//设置工作参数
+//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
+
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         if (i == 2) {
             new Thread(new Runnable() {
@@ -690,52 +1059,15 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
             ToastUtils.showToast("没有符合条件的IMSI");
             return;
         }
-
-
-
         sendrun(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer/*第一个参数是发送的黑名单数量*/);//开始发送
     }
-
-    //发送黑名单
-    private void sendBlackListRun2(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue) {
+    //发送工作参数 设置小区扫频模式
+    private void sendBlackListRunSaoPin(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
         if (sendListBlack.size() == 0) {
             ToastUtils.showToast("没有符合条件的IMSI");
             return;
         }
-        List<String> list = new ArrayList<>();
-//        Log.d(TAG, "sendBlacListRun:list" + list);
-        for (int i = 0; i < sendListBlack.size(); i++) {
-            list.add(sendListBlack.get(i).getImsi());
-        }
-        int totalMy = list.size();
-//        Log.d(TAG, "sendBlackListRun:totalMy" + totalMy);
-        //消息头
-        StringBuffer str = new StringBuffer("aaaa555553f06401000000ff");
-        //黑名单数量
-        str.append(MainUtils2.StringPin(MainUtils2.blacklistCount(Integer.toString(totalMy, 16))));
-        List<String> list2 = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).equals("") && list.get(i) != null) {
-                StringBuffer imsi = toIMSI(list.get(i));
-                str.append(imsi).append("0000");
-                list2.add(list.get(i));
-
-            }
-        }
-        for (int i = 0; i < list2.size(); i++) {
-            PararBean pararBean = new PararBean();
-            pararBean.setImsi(list2.get(i));
-
-
-        }
-        for (int i = 0; i < 20 - list2.size(); i++) {
-            str.append("0000000000000000000000000000000000");
-        }
-        str.append("010000");
-        if (!TextUtils.isEmpty(str)) {
-            sendrun2(str, sendListBlack, tf1, spinnerS1, context, listImsiListTrue);//开始发送
-
-        }
+        sendrunSaoPin(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer/*第一个参数是发送的黑名单数量*/);//开始发送
     }
 
     //设备1已开始发送
@@ -872,6 +1204,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     private void sendrun(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
         sb1Locations(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer);
     }
+    //设备1扫频已开始发送
+    private void sendrunSaoPin(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
+        sb1LocationSaopin(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer);
+    }
 
     //设备1定位模式 手动
     private void sb1Locations(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
@@ -946,6 +1282,61 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
 
 //        }).start();
+
+    }
+
+    //设备1自动扫频模式
+    private void sb1LocationSaopin(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
+
+            if (!TextUtils.isEmpty(spinnerS1)) {
+                String yy = "";
+                DBManagerPinConfig dbManagerPinConfig = null;
+                List<PinConfigBean> pinConfigBeans;
+                try {
+                    dbManagerPinConfig = new DBManagerPinConfig(context);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(spinnerS1));//查询对应的频点
+                    yy = pinConfigBeans.get(0).getYy();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+//                        Log.d(TAG, "sendBlackList:移动 ");
+                if (listImsiListTrue.size() > 0 && listImsiListTrue != null) {
+                    for (int i = 0; i < listImsiListTrue.size(); i++) {
+                        if (listImsiListTrue.get(i).getYy().equals(yy)) {
+                            sendListBlack.add(listImsiListTrue.get(i));
+                        }
+                    }
+                }
+
+                if (sendListBlack.size() > 0 && sendListBlack != null) {
+//                            Log.d(TAG, "sendBlackList: " + sendListBlack);
+                    if (sendListBlack.size() > 20) {
+                        ToastUtils.showToast("符合条件的黑名单列表大于20");
+                    } else {
+//                                sendBlackListRun(sendListBlack);
+                    }
+//
+                } else {
+                    ToastUtils.showToast("没有符合条件的IMSI");
+                }
+
+            } else {
+                ToastUtils.showToast("请先设置下行频点");
+            }
+            if (sendListBlack.size() == 0) {
+//                        Set1StatusBar("没有符合下行频点的IMSI");
+                ToastUtils.showToast("没有符合条件的IMSI");
+            } else {//有和频点相符合的imsi就发送定位黑名单
+
+
+                    buildSDSaoPin(spinnerS1,1,"sb",context,tcpServer,sendListBlack);
+            }
+
+
 
     }
 
@@ -1556,11 +1947,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 //    }
 
     @Override
-    public void spbuilsshow(Context context, int device, int yy, String tf1, String tf2) {
+    public void spbuilsshow(Context context, int device, int yy, String tf1, String tf2, CallBackSetState callBackSetState) {//如果是设备查看的话就不创建小区
         if (device == 1) {
             if (yy == 1) {//移动运营商
                 if (tf1.equals("TDD")) {
-
                     try {
                         DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
                         List<AddPararBean> dataAll = dbManagerAddParam.getDataAll();
@@ -1569,10 +1959,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             if (dataAll.get(j).getYy().equals("移动") && dataAll.get(j).isCheckbox() == true) {
                                 listmun.add(dataAll.get(j).getImsi());
                             }
-
                         }
-//                        if (listmun.size() > 0) {
-//                        MainUtils.start1SNF(IP1, Constant.SNFTDD);
+
                         DBManagersaopin dbManagersaopin = null;
                         try {
                             dbManagersaopin = new DBManagersaopin(context);
@@ -1583,7 +1971,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                             if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                saopinSend1(saopinBeanList, tf1, yy, context);
+
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                             } else {
                                 ToastUtils.showToast("当前没有频点");
                             }
@@ -1591,9 +1981,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -1614,20 +2001,25 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+                        DBManagersaopin dbManagersaopin = null;
+                        try {
+                            dbManagersaopin = new DBManagersaopin(context);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                        try {
+                            List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                            if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,null);
+                            } else {
+                                ToastUtils.showToast("当前没有频点");
+                            }
+
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        viewS.zhishiqiehuan(1, titles);
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -1647,27 +2039,31 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+                        DBManagersaopin dbManagersaopin = null;
+                        try {
+                            dbManagersaopin = new DBManagersaopin(context);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                        try {
+                            List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                            if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                            } else {
+                                ToastUtils.showToast("当前没有频点");
+                            }
+
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        viewS.zhishiqiehuan(1, titles);
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
 
                 }
                 if (tf1.equals("FDD")) {
-
                     try {
                         DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
                         List<AddPararBean> dataAll = dbManagerAddParam.getDataAll();
@@ -1678,8 +2074,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-                        MainUtils.start1SNF(IP1, Constant.SNFFDD);
+
                         DBManagersaopin dbManagersaopin = null;
                         try {
                             dbManagersaopin = new DBManagersaopin(context);
@@ -1690,7 +2085,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                             if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                saopinSend1(saopinBeanList, tf1, yy, context);
+                                CommandUtils.spbuilsshow=true;
+
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                             } else {
                                 ToastUtils.showToast("当前没有频点");
                             }
@@ -1698,9 +2095,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -1708,7 +2102,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 }
             }
             if (yy == 3) {
-                if (tf2.equals("TDD")) {
+                MyLog.e("saopinBeanlist", "ff");
+
+                if (tf1.equals("TDD")) {
                     try {
                         DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
                         List<AddPararBean> dataAll = dbManagerAddParam.getDataAll();
@@ -1719,22 +2115,25 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-                        if (tf1.equals("TDD")) {
-//                        if (listmun.size() > 0) {
+                        DBManagersaopin dbManagersaopin = null;
+                        try {
+                            dbManagersaopin = new DBManagersaopin(context);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                            MyLog.e("saopinBeanlist", saopinBeanList.size()+"  \r\n"+saopinBeanList.toString());
+                            if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                            } else {
+                                ToastUtils.showToast("当前没有频点");
+                            }
 
-                            String titles = "";
-                            if (tf1.equals("TDD")) {
-                                titles = "FDD";
-//                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
-                            }
-                            if (tf1.equals("FDD")) {
-                                titles = "TDD";
-//                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                            }
-                            viewS.zhishiqiehuan(1, titles);
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
@@ -1753,8 +2152,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-//                        MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//
                         DBManagersaopin dbManagersaopin = null;
                         try {
                             dbManagersaopin = new DBManagersaopin(context);
@@ -1765,7 +2163,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                             if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                saopinSend1(saopinBeanList, tf1, yy, context);
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                             } else {
                                 ToastUtils.showToast("当前没有频点");
                             }
@@ -1773,9 +2172,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -1794,20 +2190,26 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-                        String titles = "";
-                        if (tf1.equals("TDD")) {
-                            titles = "FDD";
-//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+                        DBManagersaopin dbManagersaopin = null;
+                        try {
+                            dbManagersaopin = new DBManagersaopin(context);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        if (tf1.equals("FDD")) {
-                            titles = "TDD";
-//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                        try {
+                            List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                            if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                CommandUtils.spbuilsshow=true;
+
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                            } else {
+                                ToastUtils.showToast("当前没有频点");
+                            }
+
+                        } catch (SQLException e) {
+                            e.printStackTrace();
                         }
-                        viewS.zhishiqiehuan(1, titles);
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -1824,8 +2226,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
-//                        MainUtils.start1SNF(IP1, Constant.SNFFDD);
+
                         DBManagersaopin dbManagersaopin = null;
                         try {
                             dbManagersaopin = new DBManagersaopin(context);
@@ -1836,7 +2237,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                             if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                saopinSend1(saopinBeanList, tf1, yy, context);
+                                CommandUtils.spbuilsshow=true;
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                             } else {
                                 ToastUtils.showToast("当前没有频点");
                             }
@@ -1844,9 +2246,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-//                        } else {
-//                            ToastUtils.showToast("没有符合条件的IMSI");
-//                        }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
@@ -2157,7 +2556,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
         }
     }
 
-    private void saopinSend1(List<SaopinBean> saopinBeanList, String tf1, int yy, Context context) {
+    private void saopinSend1(List<SaopinBean> saopinBeanList, String tf1, int yy, Context context,CallBackSetState c) {
 //        Log.d(TAG, "listImsiListTruesad1: " + listImsiListTrue);
         List<Integer> list = new ArrayList<>();
         Log.d(TAG, "AsaopinSend1: " + saopinBeanList );
@@ -2185,10 +2584,15 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 if (list.size() > 10) {
                     ToastUtils.showToast("扫频列表大于10条");
                 } else {
-                    MainUtils.sendspSocket(list, IP1);
+                    ToastUtils.showToast("开始扫频");
+                    //先发送最优频点
+                    MyLog.e("SOSPresent", ""+list);
+//                    MainUtils.sendspSocket(list, IP1);
+                     SocketSend.getInstance().setSaoPin(list,c);
+                    //0305最优频点 创建集合将最高并且相同的频点存储 在看0201里是否有想符合的频点
+                    //有根据场强值来判断，如果有好几个相同的场强值就默认选择第一个
                     Log.d(TAG, "saopinSend1gk: " + list);
                 }
-
             } else {
 //                ToastUtils.showToast("当前没有" + zs + "的制式");
                 ToastUtils.showToast("当前没有频点");
@@ -2242,10 +2646,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     @Override
-    public void spbuils(Context context, int device, int yy, String tf1, String tf2) {
+    public void spbuils(Context context, int device, int yy, String tf1, String tf2,CallBackSetState callBackSetState) {
         if (device == 1) {
-            if (yy == 1) {//移动运营商
-                if (tf1.equals("TDD")) {
+            if (yy == 1) {
+                if (tf1.equals("TDD")) {//移动TDD
 
                     try {
                         DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
@@ -2269,7 +2673,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    CommandUtils.spbuilsshow=false;
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -2287,9 +2692,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                 }
 
-                if (tf1.equals("FDD")) {
-
-
+                if (tf1.equals("FDD")) {//移动FDD
                     try {
                         DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
                         List<AddPararBean> dataAll = dbManagerAddParam.getDataAll();
@@ -2301,16 +2704,38 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            String titles = "";
-                            if (tf1.equals("TDD")) {
-                                titles = "FDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            DBManagersaopin dbManagersaopin = null;
+                            try {
+                                dbManagersaopin = new DBManagersaopin(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            if (tf1.equals("FDD")) {
-                                titles = "TDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            try {
+                                List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                                if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                    CommandUtils.spbuilsshow=false;
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                                } else {
+                                    ToastUtils.showToast("当前没有频点");
+                                }
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            viewS.zhishiqiehuan(1, titles);
+
+//                            String titles = "";
+//                            if (tf1.equals("TDD")) {
+//                                titles = "FDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            }
+//                            if (tf1.equals("FDD")) {
+//                                titles = "TDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                            }
+//                            viewS.zhishiqiehuan(1, titles);
                         } else {
                             ToastUtils.showToast("没有符合条件的IMSI");
                         }
@@ -2334,16 +2759,37 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            String titles = "";
-                            if (tf1.equals("TDD")) {
-                                titles = "FDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            DBManagersaopin dbManagersaopin = null;
+                            try {
+                                dbManagersaopin = new DBManagersaopin(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            if (tf1.equals("FDD")) {
-                                titles = "TDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            try {
+                                List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                                if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                    CommandUtils.spbuilsshow=false;
+
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                                } else {
+                                    ToastUtils.showToast("当前没有频点");
+                                }
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            viewS.zhishiqiehuan(1, titles);
+//                            String titles = "";
+////                            if (tf1.equals("TDD")) {
+////                                titles = "FDD";
+////                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+////                            }
+////                            if (tf1.equals("FDD")) {
+////                                titles = "TDD";
+////                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+////                            }
+////                            viewS.zhishiqiehuan(1, titles);
                         } else {
                             ToastUtils.showToast("没有符合条件的IMSI");
                         }
@@ -2365,7 +2811,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
                             DBManagersaopin dbManagersaopin = null;
                             try {
                                 dbManagersaopin = new DBManagersaopin(context);
@@ -2376,7 +2822,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    CommandUtils.spbuilsshow=false;
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -2406,17 +2853,38 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                     }
                     if (tf1.equals("TDD")) {
                         if (listmun.size() > 0) {
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            DBManagersaopin dbManagersaopin = null;
+                            try {
+                                dbManagersaopin = new DBManagersaopin(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                                if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                    CommandUtils.spbuilsshow=false;
 
-                            String titles = "";
-                            if (tf1.equals("TDD")) {
-                                titles = "FDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                                } else {
+                                    ToastUtils.showToast("当前没有频点");
+                                }
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            if (tf1.equals("FDD")) {
-                                titles = "TDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
-                            }
-                            viewS.zhishiqiehuan(1, titles);
+//
+//                            String titles = "";
+//                            if (tf1.equals("TDD")) {
+//                                titles = "FDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            }
+//                            if (tf1.equals("FDD")) {
+//                                titles = "TDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                            }
+//                            viewS.zhishiqiehuan(1, titles);
                         } else {
                             ToastUtils.showToast("没有符合条件的IMSI");
                         }
@@ -2437,7 +2905,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
                             DBManagersaopin dbManagersaopin = null;
                             try {
                                 dbManagersaopin = new DBManagersaopin(context);
@@ -2448,7 +2916,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    CommandUtils.spbuilsshow=false;
+
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -2478,16 +2948,37 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            String titles = "";
-                            if (tf1.equals("TDD")) {
-                                titles = "FDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            DBManagersaopin dbManagersaopin = null;
+                            try {
+                                dbManagersaopin = new DBManagersaopin(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            if (tf1.equals("FDD")) {
-                                titles = "TDD";
-                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+                            try {
+                                List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
+                                if (saopinBeanList != null && saopinBeanList.size() > 0) {
+//                                    Set1StatusBar("功放开启成功");
+                                    CommandUtils.spbuilsshow=false;
+
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
+                                } else {
+                                    ToastUtils.showToast("当前没有频点");
+                                }
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
-                            viewS.zhishiqiehuan(1, titles);
+//                            String titles = "";
+//                            if (tf1.equals("TDD")) {
+//                                titles = "FDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            }
+//                            if (tf1.equals("FDD")) {
+//                                titles = "TDD";
+//                                MainUtils.start1SNF(IP1, Constant.SNFTDD);
+//                            }
+//                            viewS.zhishiqiehuan(1, titles);
                         } else {
                             ToastUtils.showToast("没有符合条件的IMSI");
                         }
@@ -2508,7 +2999,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                         }
                         if (listmun.size() > 0) {
-                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
+//                            MainUtils.start1SNF(IP1, Constant.SNFFDD);
                             DBManagersaopin dbManagersaopin = null;
                             try {
                                 dbManagersaopin = new DBManagersaopin(context);
@@ -2519,7 +3010,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    CommandUtils.spbuilsshow=false;
+
+                                    saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -2830,6 +3323,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
             }
         }
     }
+
+
 
     //restart   1表示重启 0表示不重启
     @Override
@@ -3646,6 +4141,397 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 //            }
 //
 //        }
+    }
+
+    @Override
+    public void setStartYy(TCPServer tcpServer,int device, boolean b, String sb1, String sp1, Context context, String tf1, boolean phoneFalg) {
+                    MyLog.e("南志强", "b: "+b);
+                    MyLog.e("南志强", "sb1  "+sb1);
+                    MyLog.e("南志强", "sp1  "+sp1);
+                    MyLog.e("南志强", "tf1  "+tf1);
+                    MyLog.e("南志强", "phoneFalg  "+phoneFalg);
+                    if (!b) {//如果设备处于未就绪时 手动定位
+                        if (TextUtils.isEmpty(sp1)) {
+                            ToastUtils.showToast("设备1下行频点不能为空");
+                            return;
+                        }
+                        if (sb1.equals("就绪")) {
+                            String yy = "";
+                            String sb1zhishi = "";
+                            List<PinConfigBean> pinConfigBeans = null;
+                            DBManagerPinConfig dbManagerPinConfig = null;
+                            try {
+                                dbManagerPinConfig = new DBManagerPinConfig(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(sp1)); //查询对应的频点
+                                yy = pinConfigBeans.get(0).getYy();
+                                sb1zhishi = pinConfigBeans.get(0).getTf();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            if (sb1zhishi.equals(tf1)) {
+                                MyLog.e("制式jjjj", sb1zhishi+"-----------"+tf1);
+                                DBManagerAddParam dbManagerAddParam = null;
+                                List<AddPararBean> dataAll = null;//首页IMSI列表的数据
+                                List<AddPararBean> listImsiListTrue = null;//装载已经被选中的imsi
+                                try {
+                                    try {
+                                        dbManagerAddParam = new DBManagerAddParam(context);
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                    try {
+                                        dataAll = dbManagerAddParam.getDataAll();
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                    listImsiListTrue = new ArrayList<>();
+                                    if (dataAll.size() > 0) {
+                                        for (int i = 0; i < dataAll.size(); i++) {
+                                            if (dataAll.get(i).isCheckbox() == true) {
+                                                dataAll.get(i).setSb("");
+                                                listImsiListTrue.add(dataAll.get(i));
+                                            }
+                                        }
+                                        List<Integer> list1size = new ArrayList<>();
+                                        if (listImsiListTrue.size() > 0) {
+                                            for (int i = 1; i < listImsiListTrue.size() + 1; i++) {
+
+                                                list1size.add(i);
+
+                                            }
+//                                            viewS.setpararBeansList1(listImsiListTrue);
+                                        }
+
+                                    }
+                                    List<AddPararBean> sendListBlack = null;
+                                    sendListBlack = new ArrayList<>();
+//                        Log.d(TAG, "sendBlackList:移动 ");
+                                    if (listImsiListTrue.size() > 0 && listImsiListTrue != null) {
+                                        for (int i = 0; i < listImsiListTrue.size(); i++) {
+                                            if (listImsiListTrue.get(i).getYy().equals(yy)) {
+                                                sendListBlack.add(listImsiListTrue.get(i));
+                                            }
+                                        }
+                                    }
+
+                                    if (sendListBlack.size() > 0 && sendListBlack != null) {
+//                                Log.d(TAG, "sendBlackList: " + sendListBlack);
+                                        if (sendListBlack.size() > 20) {
+                                            ToastUtils.showToast("符合条件的黑名单列表大于20");
+                                        } else {
+                                            dialog = new Dialog(context, R.style.menuDialogStyleDialogStyle);
+                                            inflate = LayoutInflater.from(context).inflate(R.layout.dialog_item_title, null);
+                                            TextView tv_title = inflate.findViewById(R.id.tv_title);
+//            String ip=IP1;
+
+                                            tv_title.setText("确定要启动设备1吗?");
+//                ip=IP1;
+
+                                            Button bt_confirm = inflate.findViewById(R.id.bt_confirm);
+
+                                            final List<AddPararBean> finalSendListBlack = sendListBlack;
+                                            final List<AddPararBean> finalListImsiListTrue = listImsiListTrue;
+                                            bt_confirm.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null);
+
+
+                                                    dialog.dismiss();
+                                                    dialog.cancel();
+
+                                                }
+                                            });
+                                            Button bt_cancel = inflate.findViewById(R.id.bt_cancel);
+                                            bt_cancel.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    dialog.dismiss();
+                                                    dialog.cancel();
+                                                }
+                                            });
+                                            dialog.setCanceledOnTouchOutside(false);
+                                            dialog.setContentView(inflate);
+                                            //获取当前Activity所在的窗体
+                                            Window dialogWindow = dialog.getWindow();
+                                            //设置Dialog从窗体底部弹出
+                                            dialogWindow.setGravity(Gravity.CENTER);
+                                            //获得窗体的属性
+                                            WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+//                           lp.y = 20;//设置Dialog距离底部的距离
+//                          将属性设置给窗体
+                                            dialogWindow.setAttributes(lp);
+                                            dialog.show();//显示对话框
+                                        }
+//
+                                    } else {
+                                        ToastUtils.showToast("没有符合条件的IMSI");
+                                    }
+
+                                } catch (Exception e) {
+                                }
+                            } else {//制式不一致
+//                                ToastUtils.showToast("设备1制式不一致");
+
+                                dialog = new Dialog(context, R.style.menuDialogStyleDialogStyle);
+                                inflate = LayoutInflater.from(context).inflate(R.layout.dialog_item_title, null);
+                                TextView tv_title = inflate.findViewById(R.id.tv_title);
+//            String ip=IP1;
+
+                                tv_title.setText("设备1需要切换制式并重启?");
+//                ip=IP1;
+
+                                Button bt_confirm = inflate.findViewById(R.id.bt_confirm);
+
+                                bt_confirm.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        viewS.zhishiqiehuan(1, tf1);
+
+                                        dialog.dismiss();
+                                        dialog.cancel();
+
+                                    }
+                                });
+                                Button bt_cancel = inflate.findViewById(R.id.bt_cancel);
+                                bt_cancel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        dialog.dismiss();
+                                        dialog.cancel();
+                                    }
+                                });
+                                dialog.setCanceledOnTouchOutside(false);
+                                dialog.setContentView(inflate);
+                                //获取当前Activity所在的窗体
+                                Window dialogWindow = dialog.getWindow();
+                                //设置Dialog从窗体底部弹出
+                                dialogWindow.setGravity(Gravity.CENTER);
+                                //获得窗体的属性
+                                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+//                           lp.y = 20;//设置Dialog距离底部的距离
+//                          将属性设置给窗体
+                                dialogWindow.setAttributes(lp);
+                                dialog.show();//显示对话框
+                                return;
+                            }
+                        } else {
+                            ToastUtils.showToast("设备1不再就绪状态");
+                            return;
+                        }
+                    } else {//自动
+                        if (phoneFalg == false) {
+//                            ToastUtils.showToast("自动");
+                            Log.d("aaaaa", "setStart: 1");
+
+                            viewS.zidongsaopinjianlixiaoqu(device);
+                        } else {
+                            Log.d("aaaaa", "setStart: 2");
+                            String yy = "";
+                            List<PinConfigBean> pinConfigBeans = null;
+                            DBManagerPinConfig dbManagerPinConfig = null;
+                            try {
+                                dbManagerPinConfig = new DBManagerPinConfig(context);
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            try {
+                                pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(sp1)); //查询对应的频点
+                                yy = pinConfigBeans.get(0).getYy();
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            List<AddPararBean> listImsiListTrue = null;
+                            List<AddPararBean> dataAll = null;
+                            try {
+                                DBManagerAddParam dbManagerAddParam = new DBManagerAddParam(context);
+                                dataAll = dbManagerAddParam.getDataAll();
+                                listImsiListTrue = new ArrayList<>();
+                                if (dataAll.size() > 0) {
+                                    for (int i = 0; i < dataAll.size(); i++) {
+                                        if (dataAll.get(i).isCheckbox() == true) {
+                                            dataAll.get(i).setSb("");
+                                            listImsiListTrue.add(dataAll.get(i));
+                                        }
+                                    }
+                                    List<Integer> list1size = new ArrayList<>();
+                                    if (listImsiListTrue.size() > 0) {
+                                        for (int i = 1; i < listImsiListTrue.size() + 1; i++) {
+
+                                            list1size.add(i);
+
+                                        }
+
+                                    }
+                                    List<AddPararBean> sendListBlack = null;
+                                    sendListBlack = new ArrayList<>();
+//                        Log.d(TAG, "sendBlackList:移动 ");
+                                    if (listImsiListTrue.size() > 0 && listImsiListTrue != null) {
+                                        for (int i = 0; i < listImsiListTrue.size(); i++) {
+                                            if (listImsiListTrue.get(i).getYy().equals(yy)) {
+                                                sendListBlack.add(listImsiListTrue.get(i));
+                                            }
+                                        }
+                                    }
+                                    if (sendListBlack.size() == 0 && sendListBlack == null) {
+                                        ToastUtils.showToast("符合条件的黑名单列表大于20");
+                                    } else {
+                                        if (sendListBlack.size() > 20) {
+                                            ToastUtils.showToast("没有符合条件的IMSI");
+                                        } else {
+                                            sendBlackListRun(sendListBlack, tf1, sp1, context, listImsiListTrue,tcpServer);
+                                        }
+                                    }
+
+                                } else {
+                                    ToastUtils.showToast("没有符合条件的IMSI");
+                                }
+
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                    }
+
+//                if (sb1.equals("就绪")) {
+//                    String yy = "";
+//                    String sb1zhishi = "";
+//                    List<PinConfigBean> pinConfigBeans = null;
+//                    DBManagerPinConfig dbManagerPinConfig = null;
+//                    try {
+//                        dbManagerPinConfig = new DBManagerPinConfig(context);
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
+//                    try {
+//                        pinConfigBeans = dbManagerPinConfig.queryData(Integer.parseInt(sp1)); //查询对应的频点
+//                        yy = pinConfigBeans.get(0).getYy();
+//                        sb1zhishi = pinConfigBeans.get(0).getTf();
+//                    } catch (SQLException e) {
+//                        e.printStackTrace();
+//                    }
+//                    if (sb1zhishi.equals(tf1)) {
+//                        DBManagerAddParam dbManagerAddParam = null;
+//                        List<AddPararBean> dataAll = null;//首页IMSI列表的数据
+//                        List<AddPararBean> listImsiListTrue = null;//装载已经被选中的imsi
+//                        try {
+//                            try {
+//                                dbManagerAddParam = new DBManagerAddParam(context);
+//                            } catch (SQLException e) {
+//                                e.printStackTrace();
+//                            }
+//                            try {
+//                                dataAll = dbManagerAddParam.getDataAll();
+//                            } catch (SQLException e) {
+//                                e.printStackTrace();
+//                            }
+//                            listImsiListTrue = new ArrayList<>();
+//                            if (dataAll.size() > 0) {
+//                                for (int i = 0; i < dataAll.size(); i++) {
+//                                    if (dataAll.get(i).isCheckbox() == true) {
+//                                        dataAll.get(i).setSb("");
+//                                        listImsiListTrue.add(dataAll.get(i));
+//                                    }
+//                                }
+//                                List<Integer> list1size = new ArrayList<>();
+//                                if (listImsiListTrue.size() > 0) {
+//                                    for (int i = 1; i < listImsiListTrue.size() + 1; i++) {
+//
+//                                        list1size.add(i);
+//
+//                                    }
+////                                    viewS.setpararBeansList1(listImsiListTrue);
+//                                }
+//
+//                            }
+//                            List<AddPararBean> sendListBlack = null;
+//                            sendListBlack = new ArrayList<>();
+////                        Log.d(TAG, "sendBlackList:移动 ");
+//                            if (listImsiListTrue.size() > 0 && listImsiListTrue != null) {
+//                                for (int i = 0; i < listImsiListTrue.size(); i++) {
+//                                    if (listImsiListTrue.get(i).getYy().equals(yy)) {
+//                                        sendListBlack.add(listImsiListTrue.get(i));
+//                                    }
+//                                }
+//                            }
+//
+//                            if (sendListBlack.size() > 0 && sendListBlack != null) {
+////                                Log.d(TAG, "sendBlackList: " + sendListBlack);
+//                                if (sendListBlack.size() > 20) {
+//                                    ToastUtils.showToast("符合条件的黑名单列表大于20");
+//                                } else {
+//                                    final List<AddPararBean> finalSendListBlack = sendListBlack;
+//                                    final List<AddPararBean> finalListImsiListTrue = listImsiListTrue;
+//
+//                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null);
+//
+//
+//                                }
+////
+//                            } else {
+//
+//                                ToastUtils.showToast("没有符合条件的IMSI");
+//                            }
+//
+//                        } catch (Exception e) {
+//                        }
+//                    } else {//制式不一致
+////                        ToastUtils.showToast("设备1制式不一致");
+//                        dialog = new Dialog(context, R.style.menuDialogStyleDialogStyle);
+//                        inflate = LayoutInflater.from(context).inflate(R.layout.dialog_item_title, null);
+//                        TextView tv_title = inflate.findViewById(R.id.tv_title);
+////            String ip=IP1;
+//
+//                        tv_title.setText("设备1需要切换制式并重启?");
+////                ip=IP1;
+//
+//                        Button bt_confirm = inflate.findViewById(R.id.bt_confirm);
+//
+//                        bt_confirm.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                viewS.zhishiqiehuan(1, tf1);
+//
+//                                dialog.dismiss();
+//                                dialog.cancel();
+//
+//                            }
+//                        });
+//                        Button bt_cancel = inflate.findViewById(R.id.bt_cancel);
+//                        bt_cancel.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                dialog.dismiss();
+//                                dialog.cancel();
+//                            }
+//                        });
+//                        dialog.setCanceledOnTouchOutside(false);
+//                        dialog.setContentView(inflate);
+//                        //获取当前Activity所在的窗体
+//                        Window dialogWindow = dialog.getWindow();
+//                        //设置Dialog从窗体底部弹出
+//                        dialogWindow.setGravity(Gravity.CENTER);
+//                        //获得窗体的属性
+//                        WindowManager.LayoutParams lp = dialogWindow.getAttributes();
+////                           lp.y = 20;//设置Dialog距离底部的距离
+////                          将属性设置给窗体
+//                        dialogWindow.setAttributes(lp);
+//                        dialog.show();//显示对话框
+//
+//                        return;
+//                    }
+//
+//                } else {
+//                    ToastUtils.showToast("设备1不再就绪状态");
+//                    return;
+//                }
     }
 
     /**
@@ -5397,7 +6283,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5418,7 +6304,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5544,7 +6430,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5564,7 +6450,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5643,7 +6529,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5663,7 +6549,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5741,7 +6627,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }
@@ -5761,7 +6647,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                 List<SaopinBean> saopinBeanList = dbManagersaopin.getStudent();//查询对应的频点
                                 if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
-                                    saopinSend1(saopinBeanList, tf1, yy, context);
+                                    saopinSend1(saopinBeanList, tf1, yy, context,null);
                                 } else {
                                     ToastUtils.showToast("当前没有频点");
                                 }

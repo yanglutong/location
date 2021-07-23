@@ -2,6 +2,7 @@ package com.sm.android.locations.location.initData;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.sm.android.locations.location.Utils.MainUtils.MainUtilsThread;
@@ -11,6 +12,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+
+import static com.sm.android.locations.location.initData.CommandUtils.SN;
 
 public class TCPServer extends Thread {
     public static boolean isRun=true;
@@ -89,6 +93,51 @@ public class TCPServer extends Thread {
 
                     if(s.contains("0301")){//心跳报文
                         MyLog.accept("0301", str,StringToHex.convertHexToString(str));
+                        String[] split = body.split("\t");
+                        for (String s1 : split) {
+                            Log.i("0301ylt", "accept: "+s1);
+                            if(s1.contains("SN")){
+                                String[] strings = s1.split(":");
+                                SN=strings[1];
+                            }if(s1.contains("MAC")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.MAC=strings[1];
+                            }if(s1.contains("FW")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.FW=strings[1];
+                            }if(s1.contains("CELL")){
+                                String[] strings = s1.split(":");
+                                CommandUtils. CELL=strings[1];
+                            }if(s1.contains("GPS")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.GPS=strings[1];
+                            }if(s1.contains("TMP")){
+                                String[] strings = s1.split(":");
+                                CommandUtils. TMP=strings[1];
+                            }
+                            if(s1.contains("RF:")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.RF=strings[1];
+                            }if(s1.contains("CNM:")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.CNM=strings[1];
+                            }if(s1.contains("SYNC:")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.SYNC=strings[1];
+                            }if(s1.contains("RIP:")){
+                                String[] strings = s1.split(":");
+                                CommandUtils.RIP=strings[1];
+                            }
+                        }
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.SN+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.MAC+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.FW+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.BAND+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.PLMN+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.CELL+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.RF+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.GPS+"\r\n");
+                        MyLog.i("0301ylt", "accept: "+CommandUtils.TMP+"\r\n");
                     }
                 if(s.contains("0303")){//被定位的imsi上报
                     message=Message.obtain();
@@ -100,7 +149,6 @@ public class TCPServer extends Thread {
                     MyLog.accept("定位0303", str,StringToHex.convertHexToString(str));
                     MyLog.e("定位中",body.substring(0,24));
                 }
-
                     if(s.contains("0208")){//获取公网参数回应
                     message=Message.obtain();
                     message.what = 0207;//0208
@@ -109,6 +157,153 @@ public class TCPServer extends Thread {
                     message.setData(bundle);
                     handler.sendMessage(message);
                     MyLog.accept("0208", str,StringToHex.convertHexToString(str));
+
+//                        public static String DLARFCN="";//下行
+//                        public static String ULARFCN="";//上行频点
+//                        public static String PERIOD="";//采集周期
+//                        public static String PMAX="";//发射功率
+//                        public static String PA="";//整机输出功率
+//                        public static String CAP="";//采集模式
+//                        public static String PCI="";
+//                        public static String TAC="";
+//                        public static String CI="";
+
+
+                        String[] split = body.split("\t");
+                        for (String s1 : split) {
+                            MyLog.i("0208YLT", s1);
+                              if(s1.contains("DLARFCN")){
+                                  MyLog.i("020202",s1);
+                                  String[] strings = s1.split(":");
+                                  if(strings.length>1){
+                                      CommandUtils.DLARFCN=strings[1];
+                                      MyLog.i("020202", CommandUtils.DLARFCN);
+                                  }
+
+                              }
+                           if(s1.contains("ULARFCN")){
+                                String[] strings = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                               if(strings.length>1){
+                                    CommandUtils.ULARFCN=strings[1];
+                                    MyLog.i("0208YLT",""+CommandUtils.ULARFCN+"\r\n");
+                                }
+
+//                                }
+                            }
+                            if(s1.contains("BAND")){
+                                String[] strings = s1.split(":");
+                                CommandUtils. BAND=strings[1];
+                            }
+                            if(s1.contains("PLMN")){
+                                String[] strings = s1.split(":");
+                                CommandUtils. PLMN=strings[1].substring(0,5);
+                            }
+                            if(s1.contains("PERIOD")){
+                                String[] split1 = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                                if(split1.length>1){
+                                    CommandUtils.PERIOD=split1[1];
+                                    MyLog.i("0208YLT",""+CommandUtils.PERIOD+"\r\n");
+                                }
+
+//                                }
+                            }
+                            if(s1.contains("PMAX")){
+                                String[] split1 = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                                if(split1.length>1){
+                                        CommandUtils.PMAX=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.PMAX+"\r\n");
+                                    }
+//                                }
+                            }
+                            if(s1.contains("PA")){
+                                String[] split1 = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                                if(split1.length>1){
+                                        CommandUtils.PA=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.PA+"\r\n");
+                                    }
+//                                }
+                            }
+                            if(s1.contains("CAP")){
+                                String[] split1 = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                                if(split1.length>1){
+                                        CommandUtils.CAP=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.CAP+"\r\n");
+                                    }
+//                                }
+                            }
+                          if(s1.contains("PCI:")){
+//                              MyLog.i("0208YLTPCI",""+s1+"\r\n");
+                              if(!s1.contains("CNM")){
+//                                  MyLog.i("0208YLTPCI",""+s1+"\r\n");
+
+                                  String[] split1 = s1.split(":");
+
+                                  if(split1.length>1) {
+                                      CommandUtils.PCI = split1[1];
+                                      MyLog.i("0208YLTPCI", "" + CommandUtils.PCI + "\r\n");
+                                  }
+                              }
+
+//
+////                                }
+                          }
+                            if(s1.contains("TAC")){
+                                String[] split1 = s1.split(":");
+//                                if(!TextUtils.isEmpty(split1[1])){
+                                if(split1.length>1){
+                                        CommandUtils.TAC=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.TAC+"\r\n");
+                                    }
+//                                }
+                            }
+                            if(s1.contains("CI")){
+                                if(s1.startsWith("CI")){
+                                    String[] split1 = s1.split(":");
+                                    if(split1.length>1){
+                                        CommandUtils.CI=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.CI+"\r\n");
+                                    }
+                                }
+                            }if(s1.contains("PMAX")){
+
+                                    String[] split1 = s1.split(":");
+                                    if(split1.length>1){
+                                        CommandUtils.PMAX=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.PMAX+"\r\n");
+                                    }
+                            }
+                            if(s1.contains("GAIN")){
+
+                                    String[] split1 = s1.split(":");
+                                    if(split1.length>1){
+                                        CommandUtils.GAIN=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.GAIN+"\r\n");
+                                    }
+                            }
+                            if(s1.contains("MODE")){
+
+                                    String[] split1 = s1.split(":");
+                                    if(split1.length>1){
+                                        CommandUtils.MODE=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.MODE+"\r\n");
+                                    }
+                            }
+                            if(s1.contains("RSTP")){
+
+                                    String[] split1 = s1.split(":");
+                                    if(split1.length>1){
+                                        CommandUtils.RSTP=split1[1];
+                                        MyLog.i("0208YLT",""+CommandUtils.RSTP+"\r\n");
+                                    }
+                            }
+                        }
+
+
                     }
 
                     if(s.contains("0302")){//小区工作状态中 被采集的imsi上报
@@ -166,6 +361,24 @@ public class TCPServer extends Thread {
                         message.setData(bundle);
                         handler.sendMessage(message);
                         MyLog.accept("0236", str,StringToHex.convertHexToString(str));
+                    }
+//                    if(s.contains("0201")){//扫频列表的回复 0305 0201
+//                        message=Message.obtain();
+//                        message.what = 0201;
+//                        message.obj = StringToHex.convertHexToString(str);
+//                        bundle.putString("type", s);
+//                        message.setData(bundle);
+//                        handler.sendMessage(message);
+//                        MyLog.accept("0201", str,StringToHex.convertHexToString(str));
+//                    }
+                    if(s.contains("0305")||s.contains("0201")){//扫频列表的回复 0305 0201
+                        message=Message.obtain();
+                        message.what = 0305;
+                        message.obj = StringToHex.convertHexToString(str);
+                        bundle.putString("type", s);
+                        message.setData(bundle);
+                        handler.sendMessage(message);
+                        MyLog.accept("0305", str,StringToHex.convertHexToString(str));
                     }
                     MyLog.e("type", message.getData().getString("type"));
             }
@@ -286,22 +499,6 @@ public class TCPServer extends Thread {
     }
 
     public void sendPost(String header) {
-        ExecutorServiceUtils.cachedThreadPool.execute(() -> {
-            try {
-                if(outputStream!=null){
-                    outputStream.flush();
-                    outputStream.write(MainUtilsThread.hexStringToByteArray(header));
-                    message=Message.obtain();
-                    message.what = 2;//发送
-                    message.obj = header;
-                    handler.sendMessage(message);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-    public void sendMsgAndTag(String header) {
         ExecutorServiceUtils.cachedThreadPool.execute(() -> {
             try {
                 if(outputStream!=null){
