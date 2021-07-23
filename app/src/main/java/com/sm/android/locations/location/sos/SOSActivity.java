@@ -2487,7 +2487,6 @@ public class SOSActivity extends Activity implements View.OnClickListener, SOSVI
                             if(Integer.parseInt(CommandUtils.MODE)==2){
                                 tf1="FDD";
                             }
-
                              zidongsaopinjianlixiaoqu(1);//自动扫频
 
                         }

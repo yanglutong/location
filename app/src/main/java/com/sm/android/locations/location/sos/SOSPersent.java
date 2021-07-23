@@ -131,11 +131,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 ToastUtils.showToast("设备1下行频点不能为空");
                 return;
             }
-            if(!"WIFI连接:正常".equals(tv)){
+            if(!"WIFI连接: 正常".equals(tv)){
                 ToastUtils.showToast("请检查当前wifi连接");
                 return;
             }
-
 
             String yy = "";
             String sb1zhishi = "";
