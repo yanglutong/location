@@ -196,6 +196,33 @@ public class TextFragment1 extends BaseFragment {
             public void onClick(View view) {
                 if(!CommandUtils.type.equals("")){
                     if(SOSActivity.socketTcpServer!=null){
+
+//
+//                        CommandUtils. BAND="";//Band
+//                        CommandUtils. PLMN="";//PLMN
+//
+//                        CommandUtils. GPS="";//GPS状态
+////                        CommandUtils. CELL="";//小区状态  小区是否建立成功：0：未建立 1:建立成功
+//
+//
+//                        CommandUtils. DLARFCN="";//下行
+//                        CommandUtils. ULARFCN="";//上行频点
+//                        CommandUtils. PERIOD="";//采集周期
+//                        CommandUtils. PMAX="";//发射功率
+//                        CommandUtils. PA="";//整机输出功率
+//                        CommandUtils. CAP="";//采集模式
+//                        CommandUtils. PCI="";
+//                        CommandUtils. TAC="";
+//                        CommandUtils. CI="";
+//                        CommandUtils. GAIN="";// 功放增益
+//                        CommandUtils. MODE="";// 工作模式
+//                        CommandUtils. RSTP="";// 信号发射功率
+//
+//
+//
+//
+
+
                         CommandUtils.gwCan="获取公网";
                         SOSActivity.socketTcpServer.sendPost(CommandUtils.getPublicParameters());
 
@@ -265,18 +292,19 @@ public class TextFragment1 extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if(!CommandUtils.type.equals("")){
-                    if(SOSActivity.socketTcpServer!=null) {
-                        if (CommandUtils.CELL.equals("")) {
-                            tv_type.setText(CommandUtils.CELL);
-                        } else {
-
-                            if (Math.abs(Integer.parseInt(CommandUtils.CELL)) == 1) {
-                                tv_type.setText("已建立");
-                            }
-                            if (Math.abs(Integer.parseInt(CommandUtils.CELL)) == 0) {
-                                tv_type.setText("未建立");
-                            }
-                        }
+                    if(SOSActivity.socketTcpServer!=null){
+                                        if(!CommandUtils.PLMN.equals("")){
+                                            if (CommandUtils.CELL.equals("")) {
+                                                tv_type.setText(CommandUtils.CELL);
+                                            } else {
+                                                if (Math.abs(Integer.parseInt(CommandUtils.CELL)) == 1) {
+                                                    tv_type.setText("已建立");
+                                                }
+                                                if (Math.abs(Integer.parseInt(CommandUtils.CELL)) == 0) {
+                                                    tv_type.setText("未建立");
+                                                }
+                                            }
+                                        }
                     }
                 }
             }
@@ -287,6 +315,25 @@ public class TextFragment1 extends BaseFragment {
         view.findViewById(R.id.bt_location_type).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+//                CommandUtils. BAND="";//Band
+//                CommandUtils. PLMN="";//PLMN
+//
+//                CommandUtils. GPS="";//GPS状态
+////                CommandUtils. CELL="";//小区状态  小区是否建立成功：0：未建立 1:建立成功
+//
+//
+//                CommandUtils. DLARFCN="";//下行
+//                CommandUtils. ULARFCN="";//上行频点
+//                CommandUtils. PERIOD="";//采集周期
+//                CommandUtils. PMAX="";//发射功率
+//                CommandUtils. PA="";//整机输出功率
+//                CommandUtils. CAP="";//采集模式
+//                CommandUtils. PCI="";
+//                CommandUtils. TAC="";
+//                CommandUtils. CI="";
+//                CommandUtils. GAIN="";// 功放增益
+//                CommandUtils. MODE="";// 工作模式
+//                CommandUtils. RSTP="";// 信号发射功率
                 if(!CommandUtils.type.equals("")){
                     if(SOSActivity.socketTcpServer!=null){
                         CommandUtils.gwCan="获取公网";
@@ -311,8 +358,12 @@ public class TextFragment1 extends BaseFragment {
                                             }
                                         }
                                         tv_zq.setText(CommandUtils.PERIOD);
-                                        tv_ueimsi.setText("1W 30(dbm)");//整机输出功率
-                                        tv_sbzq.setText("35");//接收增益
+
+
+                                        if(!CommandUtils.GAIN.equals("")){
+                                            tv_ueimsi.setText("1W 30(dbm)");//整机输出功率
+                                            tv_sbzq.setText("35");//接收增益
+                                        }
 //                                        if(Integer.parseInt(CommandUtils.GAIN)==0){
 //                                            tv_sbzq.setText("自动增益");//功放增益
 //                                        }else{

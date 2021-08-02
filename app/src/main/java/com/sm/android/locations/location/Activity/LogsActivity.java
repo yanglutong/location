@@ -19,6 +19,7 @@ import com.sm.android.locations.location.R;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.LogBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagerLog;
 import com.sm.android.locations.location.Utils.UtilsView;
+import com.sm.android.locations.location.initData.MyLog;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
@@ -92,6 +93,9 @@ public class LogsActivity extends BaseActivity implements View.OnClickListener {
                 mAdapter.setDataList(data);
                 mAdapter.setHasMoreData(true);
                 recyclerView.setAdapter(mAdapter);
+
+
+                MyLog.e("CEEE", zcBean1BeansID.toString());
             } else {
                 //没有数据
             }

@@ -10,6 +10,7 @@ import java.util.List;
  * @date: 2021/6/17
  */
 public class CommandUtils {
+    public static String dwei="";
     public static boolean spbuilsshow=false;
     public static String gwCan="";
     public static int syType=0;
@@ -20,6 +21,8 @@ public class CommandUtils {
     public static String sbZt="";//设备状态
 
     public static String xqType="0102";//小区设置参数的类型
+    public static List<Integer> list=new ArrayList<>();
+
     /**建立小区设置工作参数  0202  0成功 1失败
      * @description
      * @param

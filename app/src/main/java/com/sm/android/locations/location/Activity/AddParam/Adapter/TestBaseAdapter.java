@@ -89,7 +89,8 @@ public class TestBaseAdapter extends BaseAdapter<TestData, TestBaseAdapter.ItemV
                     Log.d("nzqcb", "onCheckedChanged: " + b);
 
 
-                        callBack.Call(data.id, b, holder.cb);
+
+                        callBack.Call(data.id, b, holder.cb,holder);
 
 
                 }
@@ -228,7 +229,7 @@ public class TestBaseAdapter extends BaseAdapter<TestData, TestBaseAdapter.ItemV
     }
 
     public interface ITTestBaseAdapterCallBack {
-        void Call(int position, boolean checkFlag, CheckBox checkBox);
+        void Call(int position, boolean checkFlag, CheckBox checkBox,ItemViewHolder holder);
 
         void CallDele(int id, int position);
     }

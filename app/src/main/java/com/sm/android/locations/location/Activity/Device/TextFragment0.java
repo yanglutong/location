@@ -276,6 +276,7 @@ public class TextFragment0 extends BaseFragment {
                     if(Integer.parseInt(CommandUtils.CNM)==-1){
                         CNM.setText("失败");
                     }
+
                 }
                 CNM1=CNM.getText().toString();
             }

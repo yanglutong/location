@@ -1,5 +1,6 @@
 package com.sm.android.locations.location.viewpagermain.NewMainPager.update.dingwei;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Message;
 
@@ -13,7 +14,10 @@ import com.sm.android.locations.location.Activity.Main.Adapter.RyImsiAdapter;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.AddPararBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.DBManagerAddParam;
 import com.sm.android.locations.location.Utils.ToastUtils;
+import com.sm.android.locations.location.initData.CallBackSetState;
 import com.sm.android.locations.location.initData.CommandUtils;
+import com.sm.android.locations.location.initData.MyLog;
+import com.sm.android.locations.location.initData.TCPServer;
 import com.sm.android.locations.location.sos.SOSActivity;
 
 import java.sql.SQLException;
@@ -21,18 +25,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DwUpdate {
-    public static void upwifi(Message msg, TextView tv1_wifi, TextView tv1_type_dw,TextView tv1_td_dw) {
+    public static void upwifi(Message msg, TextView tv1_wifi, TextView tv1_type_dw, TextView tv1_td_dw, CallBackSetState callBackSetState) {
         String wifi = msg.getData().getString("msgWifi");
 //                        Log.d(TAG, "handleMessa4age: " + wifi);
         if (wifi.equals("true")) {//无线正确
             tv1_wifi.setText("WIFI连接: 正常");
             if(!CommandUtils.type.equals("")){//设备连接成功;
-//                if(!SOSActivity.sbState.equals("")){
-//                    if(SOSActivity.isSbState){
-//                        CommandUtils.sbZt=SOSActivity.sbState;
-//                        SOSActivity.sbState="";
-//                    }
-//                }
                 tv1_type_dw.setText("当前状态："+CommandUtils.sbZt);
             }else{//设备断开
                 tv1_type_dw.setText("当前状态：未就绪");
@@ -40,7 +38,6 @@ public class DwUpdate {
         }
         if (wifi.equals("false")) {//无线错误
             tv1_td_dw.setText("双工模式：");
-//            CommandUtils.sbZt="";//离线了设备未就绪
             CommandUtils.type="";
             CommandUtils.type0303="";//wifi错误正在定位的imsi设置离线
             tv1_wifi.setText("WIFI连接:断开");

@@ -89,7 +89,7 @@
 
             <Spinner
                 android:id="@+id/mysp1"
-
+                android:paddingLeft="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -157,13 +157,13 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"/>
+
         <Button
             android:id="@+id/bt_stop1dw"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_margin="6dp"
             android:background="@color/main_hui"
-            android:onClick="stopLocation1"
             android:text="停止"
             android:textColor="@color/main_color"
             android:textSize="12dp" />

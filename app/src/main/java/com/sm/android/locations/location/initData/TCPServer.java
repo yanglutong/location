@@ -26,7 +26,7 @@ public class TCPServer extends Thread {
     Handler handler;
     public Runnable runnable;
     public Runnable runnable2;
-    private String str;
+    public static String str="";
     private String substring;
     private String body;
     private String header;
@@ -47,12 +47,11 @@ public class TCPServer extends Thread {
 
     //定時器
     private int DELYED= 20000;
-
     Bundle bundle = new Bundle();
     private void accept() throws IOException {
-        while (isRun) {
+        while (isRun) {//循环读取
             byte [] b=new byte[1024];
-            while ((inputStream.read(b))!=-1){
+            while ((inputStream.read(b))!=-1){//读取一条
                 str = toHexString1(b);
 
                 substring = str.substring(96);
@@ -157,16 +156,6 @@ public class TCPServer extends Thread {
                     message.setData(bundle);
                     handler.sendMessage(message);
                     MyLog.accept("0208", str,StringToHex.convertHexToString(str));
-
-//                        public static String DLARFCN="";//下行
-//                        public static String ULARFCN="";//上行频点
-//                        public static String PERIOD="";//采集周期
-//                        public static String PMAX="";//发射功率
-//                        public static String PA="";//整机输出功率
-//                        public static String CAP="";//采集模式
-//                        public static String PCI="";
-//                        public static String TAC="";
-//                        public static String CI="";
 
 
                         String[] split = body.split("\t");
@@ -286,7 +275,6 @@ public class TCPServer extends Thread {
                                     }
                             }
                             if(s1.contains("MODE")){
-
                                     String[] split1 = s1.split(":");
                                     if(split1.length>1){
                                         CommandUtils.MODE=split1[1];
@@ -294,7 +282,6 @@ public class TCPServer extends Thread {
                                     }
                             }
                             if(s1.contains("RSTP")){
-
                                     String[] split1 = s1.split(":");
                                     if(split1.length>1){
                                         CommandUtils.RSTP=split1[1];
@@ -362,16 +349,15 @@ public class TCPServer extends Thread {
                         handler.sendMessage(message);
                         MyLog.accept("0236", str,StringToHex.convertHexToString(str));
                     }
-//                    if(s.contains("0201")){//扫频列表的回复 0305 0201
-//                        message=Message.obtain();
-//                        message.what = 0201;
-//                        message.obj = StringToHex.convertHexToString(str);
-//                        bundle.putString("type", s);
-//                        message.setData(bundle);
-//                        handler.sendMessage(message);
-//                        MyLog.accept("0201", str,StringToHex.convertHexToString(str));
-//                    }
-                    if(s.contains("0305")||s.contains("0201")){//扫频列表的回复 0305 0201
+                    if(s.contains("0201")){//扫频列表的回复 0305 0201
+                        message=Message.obtain();
+                        message.what = 0201;
+                        message.obj = StringToHex.convertHexToString(str);
+                        bundle.putString("type", s);
+                        message.setData(bundle);
+                        handler.sendMessage(message);
+                        MyLog.accept("0201", str,StringToHex.convertHexToString(str));
+                    } if(s.contains("0305")){//扫频列表的回复 0305 0201
                         message=Message.obtain();
                         message.what = 0305;
                         message.obj = StringToHex.convertHexToString(str);
@@ -391,7 +377,7 @@ public class TCPServer extends Thread {
             public void run() {
                 try {
                     if(outputStream!=null){
-                        outputStream.flush();
+
                         outputStream.write(MainUtilsThread.hexStringToByteArray(ss));
                         if(!ss.contains("30343031")){//如果是控制端向基站发送的心跳报文就不接收了
                             message=Message.obtain();
@@ -461,15 +447,13 @@ public class TCPServer extends Thread {
                         }
                     };
                     handler.postDelayed(runnable, DELYED);
-
-                    accept();
+                    accept();//如果板卡不接收数据就重置为空
                 }
 
         } catch (IOException e) {
             e.printStackTrace();
-//            MyLog.i("TCPserver", e.getMessage());
         }
-
+        MyLog.e("TCPSERVER", "accept2");
     }
 
     /**
@@ -490,6 +474,9 @@ public class TCPServer extends Thread {
                 outputStream.close();
                 MyLog.i("TAG", "close client");
                 socket.close();
+                if(serverSocket!=null){
+                    serverSocket.close();
+                }
             }
         } catch (Exception e) {
             MyLog.i("TAG", "close err");

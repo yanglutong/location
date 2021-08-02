@@ -18,6 +18,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,6 +31,7 @@ import com.sm.android.locations.location.Activity.Main.Adapter.RyZmAdapterdw;
 import com.sm.android.locations.location.Constant.Constant;
 import com.sm.android.locations.location.R;
 import com.sm.android.locations.location.Test.setxq;
+import com.sm.android.locations.location.Utils.LoginUtils.LoginUtils;
 import com.sm.android.locations.location.Utils.MainUtils.MainUtils;
 import com.sm.android.locations.location.Utils.MainUtils.MainUtils2;
 import com.sm.android.locations.location.Utils.MainUtils.MainUtilsThread;
@@ -37,6 +39,7 @@ import com.sm.android.locations.location.Utils.MyUtils;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.AddPararBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.AddPararBeanWhite;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.Conmmunit01Bean;
+import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.LogBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.PararBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.PinConfigBean;
 import com.sm.android.locations.location.Utils.OrmSqlLite.Bean.SaopinBean;
@@ -57,6 +60,7 @@ import com.sm.android.locations.location.initData.CommandUtils;
 import com.sm.android.locations.location.initData.MyLog;
 import com.sm.android.locations.location.initData.PLMN;
 import com.sm.android.locations.location.initData.SocketSend;
+import com.sm.android.locations.location.initData.StringToHex;
 import com.sm.android.locations.location.initData.TCPServer;
 import com.sm.android.locations.location.initData.dao.DBManagerDevice;
 import com.sm.android.locations.location.initData.dao.DeviceBean;
@@ -72,11 +76,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import static com.blankj.utilcode.util.Utils.runOnUiThread;
 import static com.sm.android.locations.location.Constant.Constant.CHONGDINGXIANGSET;
 import static com.sm.android.locations.location.Constant.Constant.DOWNPIN1;
 import static com.sm.android.locations.location.Constant.Constant.DOWNPIN2;
@@ -120,18 +128,21 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     View inflate;
 
     @Override
-    public void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer) {
+    public void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer,CallBackSetState callBackSetState) {
         Log.d(TAG, "startSD: " + device + "tf==" + tf + "---" + spinnerDown);
         if (device == 1) {
             if (tf.equals("")) {
                 ToastUtils.showToast("设备未连接");
+                callBackSetState.showStateBar("设备未连接");
                 return;
             }
             if (TextUtils.isEmpty(spinnerDown)) {
-                ToastUtils.showToast("设备1下行频点不能为空");
+                callBackSetState.showStateBar("设备下行频点不能为空");
+                ToastUtils.showToast("设备下行频点不能为空");
                 return;
             }
             if(!"WIFI连接: 正常".equals(tv)){
+                callBackSetState.showStateBar("请检查当前wifi连接");
                 ToastUtils.showToast("请检查当前wifi连接");
                 return;
             }
@@ -209,7 +220,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             TextView tv_title = inflate.findViewById(R.id.tv_title);
 //            String ip=IP1;
 
-                            tv_title.setText("确定要启动设备1吗?");
+                            tv_title.setText("确定要启动设备吗?");
 //                ip=IP1;
 
                             Button bt_confirm = inflate.findViewById(R.id.bt_confirm);
@@ -219,7 +230,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             bt_confirm.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
-                                    sendBlackListRun(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer);
+
+                                    sendBlackListRun(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer,callBackSetState);
                                     dialog.dismiss();
                                     dialog.cancel();
 
@@ -259,19 +271,14 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     @Override
-    public void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer) {
+    public void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer,CallBackSetState callBackSetState) {
         Log.d(TAG, "startSD: " + device + "tf==" + tf + "---" + spinnerDown);
         if (device == 1) {
             if (tf.equals("")) {
+                callBackSetState.showStateBar("设备未连接");
                 ToastUtils.showToast("设备未连接");
                 return;
             }
-//            if(!"WIFI连接:正常".equals(tv)){
-//                ToastUtils.showToast("请检查当前wifi连接");
-//                return;
-//            }
-
-
             String yy = "";
             String sb1zhishi = "";
             List<PinConfigBean> pinConfigBeans = null;
@@ -341,7 +348,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                     } else {
                         final List<AddPararBean> finalSendListBlack = sendListBlack;
                         final List<AddPararBean> finalListImsiListTrue = listImsiListTrue;
-                                sendBlackListRunSaoPin(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer);
+                                sendBlackListRunSaoPin(finalSendListBlack, tf, spinnerDown, context, finalListImsiListTrue,tcpServer,callBackSetState);
                     }
 //
                 } else {
@@ -363,7 +370,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
 
     @Override
-    public void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack) {
+    public void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack,CallBackSetState callBackSetState) {
         if (i == 1) {
                     List<PinConfigBean> pinConfigBeans = null;//查询频点的集合
                     DBManagerPinConfig dbManagerPinConfig = null;//频点配置类
@@ -449,8 +456,11 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                     CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
 
                     MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
-//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
                     tcpServer.sendPost(header);//设置工作参数
+
+                    callBackSetState.showStateBar("下发小区参数");
+                    MyLog.e("调试Bug", header);
+                   CommandUtils.dwei="手动定位";
                 }else{
                     String zy="35";//默认使用最高增益
 //                    if(!CommandUtils.zyType.equals("")){
@@ -470,8 +480,10 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                     MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
                     tcpServer.sendPost(header);//设置工作参数
-//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
 
+                    callBackSetState.showStateBar("下发小区参数");
+                    MyLog.e("调试Bug", header);
+                    CommandUtils.dwei="手动定位";
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -586,7 +598,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
     }
  @Override
-    public void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack) {
+    public void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack,CallBackSetState callBackSetState) {
         if (i == 1) {
                     List<PinConfigBean> pinConfigBeans = null;//查询频点的集合
                     DBManagerPinConfig dbManagerPinConfig = null;//频点配置类
@@ -596,7 +608,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         e.printStackTrace();
                     }
                     if (TextUtils.isEmpty(spinnerS1)) {
-                        ToastUtils.showToast("设备1频点不能为空");
+                        ToastUtils.showToast("设备频点不能为空");
                         return;
                     }
                     try {
@@ -617,11 +629,13 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                         e.printStackTrace();
                     }
                     if (pinConfigBeans == null) {
+                        callBackSetState.showStateBar("频点配置错误");
                       ToastUtils.showToast("频点配置错误");
                         return;
                     }
                     if (forid == null) {
-                    ToastUtils.showToast("小区1配置错误");
+                        callBackSetState.showStateBar("小区配置错误");
+                        ToastUtils.showToast("小区配置错误");
                         return;
                     }
                     String s = setxq.setXq(
@@ -643,7 +657,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 DBManagerDevice device = new DBManagerDevice(context);
                 List<DeviceBean> list = device.getDeviceBeans();
                 if(list.size()>0){//用户设置了接受增益就用用户的
-
 
 
 
@@ -671,9 +684,9 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                     CommandUtils.setBlackList= com.sm.android.locations.location.initData.MyUtils.getSocketHeader(com.sm.android.locations.location.initData.MyUtils.getToHexString(CommandUtils.blackType, stringBuffer.toString()));
 
                     MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
-//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
 
                     tcpServer.sendPost(header);//设置工作参数
+
                 }else{
                     String zy="35";//默认使用最高增益
 //                    if(!CommandUtils.zyType.equals("")){
@@ -693,7 +706,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
                     MyLog.send(CommandUtils.xqType, header);//将发送的小区指令打log
                     tcpServer.sendPost(header);//设置工作参数
-//                    new SOSActivity().Set1StatusBar("小区参数下发");//提示语
 
                 }
             } catch (SQLException e) {
@@ -809,7 +821,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     @Override
-    public void stopdw(int i, Context context, String sbzhuangtai,TCPServer tcpServer) {
+    public void stopdw(int i, Context context, String sbzhuangtai, TCPServer tcpServer, Spinner spinner,TextView textView,CallBackSetState callBackSetState) {
 //        if (TextUtils.isEmpty(sbzhuangtai)) {
 //            ToastUtils.showToast("设备未连接");
 //            return;
@@ -823,7 +835,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
         TextView tv_title = inflate.findViewById(R.id.tv_title);
         String ip = IP1;
         if (i == 1) {
-            tv_title.setText("确定要停止定位1吗?");
+            tv_title.setText("确定要停止定位吗?");
             ip = IP1;
         }
         if (i == 2) {
@@ -836,7 +848,14 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
             @Override
             public void onClick(View view) {
                 /*开启射频 关*/
+                CommandUtils.dwei="停止定位";
                 tcpServer.sendPost(CommandUtils.getRF(0));//关闭射频
+                MyLog.e("调试Bug", StringToHex.convertHexToString(CommandUtils.getRF(0)));
+                callBackSetState.showStateBar("关闭射频");
+
+                spinner.setVisibility(View.VISIBLE);
+                spinner.setEnabled(true);
+                textView.setText("频点: ");
 //                MainUtils.StopLocation(finalIp);
 //                GFFLAG1 = 2;
 //                MainUtils.OpenGF1(1, 2, handler);
@@ -845,29 +864,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 dialog.dismiss();
                 dialog.cancel();
 
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                DBManagerLog dbManagerLog = null;
-                String string = "";
 
-                string = "停止定位";
-
-//                //退出日志
-//                try {
-//                    dbManagerLog = new DBManagerLog(context);
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//                LogBean logBean = new LogBean();
-//                logBean.setAssociated(LoginUtils.getId(context) + "");//关联ID
-//                logBean.setEvent(LoginUtils.setBase64(string));//登录事件
-//                logBean.setSb(LoginUtils.setBase64("1"));
-//                String format = sdf.format(new Date());//登录时间
-//                logBean.setDatetime(LoginUtils.setBase64(format));
-//                try {
-//                    dbManagerLog.insertConmmunit01Bean(logBean);
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
             }
         });
         Button bt_cancel = inflate.findViewById(R.id.bt_cancel);
@@ -1053,20 +1050,20 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     //发送工作参数 设置小区
-    private void sendBlackListRun(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
+    private void sendBlackListRun(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
         if (sendListBlack.size() == 0) {
             ToastUtils.showToast("没有符合条件的IMSI");
             return;
         }
-        sendrun(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer/*第一个参数是发送的黑名单数量*/);//开始发送
+        sendrun(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer,callBackSetState/*第一个参数是发送的黑名单数量*/);//开始发送
     }
     //发送工作参数 设置小区扫频模式
-    private void sendBlackListRunSaoPin(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
+    private void sendBlackListRunSaoPin(List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
         if (sendListBlack.size() == 0) {
             ToastUtils.showToast("没有符合条件的IMSI");
             return;
         }
-        sendrunSaoPin(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer/*第一个参数是发送的黑名单数量*/);//开始发送
+        sendrunSaoPin(new StringBuffer(), sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer,callBackSetState/*第一个参数是发送的黑名单数量*/);//开始发送
     }
 
     //设备1已开始发送
@@ -1200,17 +1197,16 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     //设备1已开始发送
-    private void sendrun(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
-        sb1Locations(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer);
+    private void sendrun(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
+        sb1Locations(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer,callBackSetState);
     }
     //设备1扫频已开始发送
-    private void sendrunSaoPin(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
-        sb1LocationSaopin(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer);
+    private void sendrunSaoPin(final StringBuffer strData, final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
+        sb1LocationSaopin(sendListBlack, tf1, spinnerS1, context, listImsiListTrue,tcpServer,callBackSetState);
     }
 
     //设备1定位模式 手动
-    private void sb1Locations(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
-
+    private void sb1Locations(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
             if (!TextUtils.isEmpty(spinnerS1)) {
                 String yy = "";
                 DBManagerPinConfig dbManagerPinConfig = null;
@@ -1271,7 +1267,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 //                    //                                    socket.send(outputPacket);
 //                    DS.send(outputPacket);
 //                    Thread.sleep(4000);
-                    buildSD(spinnerS1,1,"sb",context,tcpServer,sendListBlack);
+                    buildSD(spinnerS1,1,"sb",context,tcpServer,sendListBlack,callBackSetState);
 //
 //                } catch (Exception e) {
 //                    e.printStackTrace();
@@ -1284,8 +1280,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
     }
 
-    //设备1自动扫频模式
-    private void sb1LocationSaopin(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer) {
+    //设备自动扫频模式
+    private void sb1LocationSaopin(final List<AddPararBean> sendListBlack, final String tf1, final String spinnerS1, final Context context, final List<AddPararBean> listImsiListTrue,TCPServer tcpServer,CallBackSetState callBackSetState) {
 
             if (!TextUtils.isEmpty(spinnerS1)) {
                 String yy = "";
@@ -1330,9 +1326,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 //                        Set1StatusBar("没有符合下行频点的IMSI");
                 ToastUtils.showToast("没有符合条件的IMSI");
             } else {//有和频点相符合的imsi就发送定位黑名单
-
-
-                    buildSDSaoPin(spinnerS1,1,"sb",context,tcpServer,sendListBlack);
+                    buildSDSaoPin(spinnerS1,1,"sb",context,tcpServer,sendListBlack,callBackSetState);
             }
 
 
@@ -1948,6 +1942,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     @Override
     public void spbuilsshow(Context context, int device, int yy, String tf1, String tf2, CallBackSetState callBackSetState) {//如果是设备查看的话就不创建小区
         if (device == 1) {
+            CommandUtils.dwei="小区查看";
             if (yy == 1) {//移动运营商
                 if (tf1.equals("TDD")) {
                     try {
@@ -2011,7 +2006,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             if (saopinBeanList != null && saopinBeanList.size() > 0) {
 //                                    Set1StatusBar("功放开启成功");
                                 CommandUtils.spbuilsshow=true;
-                                saopinSend1(saopinBeanList, tf1, yy, context,null);
+                                saopinSend1(saopinBeanList, tf1, yy, context,callBackSetState);
                             } else {
                                 ToastUtils.showToast("当前没有频点");
                             }
@@ -2266,7 +2261,6 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         }
-//                        if (listmun.size() > 0) {
                         MainUtils.start1SNF(IP2, Constant.SNFTDD);
                         DBManagersaopin dbManagersaopin = null;
                         try {
@@ -2583,11 +2577,15 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 if (list.size() > 10) {
                     ToastUtils.showToast("扫频列表大于10条");
                 } else {
-                    ToastUtils.showToast("开始扫频");
+                    c.showStateBar("开始扫频");
+
+
+                    CommandUtils.list.clear();//清空每次存储的频点
+                    CommandUtils.list.addAll(list);//将下发的扫频频点存储
                     //先发送最优频点
                     MyLog.e("SOSPresent", ""+list);
-//                    MainUtils.sendspSocket(list, IP1);
-                     SocketSend.getInstance().setSaoPin(list,c);
+                    CommandUtils.dwei="自动定位";//日志标识
+                    SocketSend.getInstance().setSaoPin(list,c);
                     //0305最优频点 创建集合将最高并且相同的频点存储 在看0201里是否有想符合的频点
                     //有根据场强值来判断，如果有好几个相同的场强值就默认选择第一个
                     Log.d(TAG, "saopinSend1gk: " + list);
@@ -3327,7 +3325,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
 
     //restart   1表示重启 0表示不重启
     @Override
-    public void setStart(int device, final boolean b, final int maintype, final String sb1, String sb2, final String sp1, final String sp2, final Context context, final String tf1, final String tf2, int restart, boolean phoneFalg) {
+    public void setStart(int device, final boolean b, final int maintype, final String sb1, String sb2, final String sp1, final String sp2, final Context context, final String tf1, final String tf2, int restart, boolean phoneFalg,CallBackSetState callBackSetState) {
         if (device == 1) {
             if (restart == 1) {
                 if (maintype == 0) {
@@ -3428,7 +3426,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                             bt_confirm.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
-                                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null);
+                                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null,callBackSetState);
 
 
                                                     dialog.dismiss();
@@ -3512,7 +3510,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                             }
 
                         } else {
-                            ToastUtils.showToast("设备1不再就绪状态");
+                            ToastUtils.showToast("设备不在就绪状态");
                             return;
                         }
                     } else {//自动
@@ -3576,7 +3574,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                         if (sendListBlack.size() > 20) {
                                             ToastUtils.showToast("没有符合条件的IMSI");
                                         } else {
-                                            sendBlackListRun(sendListBlack, tf1, sp1, context, listImsiListTrue,null);
+                                            sendBlackListRun(sendListBlack, tf1, sp1, context, listImsiListTrue,null,callBackSetState);
 
                                         }
                                     }
@@ -3669,7 +3667,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                     final List<AddPararBean> finalSendListBlack = sendListBlack;
                                     final List<AddPararBean> finalListImsiListTrue = listImsiListTrue;
 
-                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null);
+                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null,callBackSetState);
 
 
                                 }
@@ -4143,7 +4141,8 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
     }
 
     @Override
-    public void setStartYy(TCPServer tcpServer,int device, boolean b, String sb1, String sp1, Context context, String tf1, boolean phoneFalg) {
+    public void setStartYy(TCPServer tcpServer,int device, boolean b, String sb1, String sp1, Context context, String tf1, boolean phoneFalg,CallBackSetState callBackSetState) {
+        CommandUtils.dwei="自动定位";
                     MyLog.e("南志强", "b: "+b);
                     MyLog.e("南志强", "sb1  "+sb1);
                     MyLog.e("南志强", "sp1  "+sp1);
@@ -4237,7 +4236,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                             bt_confirm.setOnClickListener(new View.OnClickListener() {
                                                 @Override
                                                 public void onClick(View view) {
-                                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null);
+                                                    sendBlackListRun(finalSendListBlack, tf1, sp1, context, finalListImsiListTrue,null,callBackSetState);
 
 
                                                     dialog.dismiss();
@@ -4383,7 +4382,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                                         if (sendListBlack.size() > 20) {
                                             ToastUtils.showToast("没有符合条件的IMSI");
                                         } else {
-                                            sendBlackListRun(sendListBlack, tf1, sp1, context, listImsiListTrue,tcpServer);
+                                            sendBlackListRun(sendListBlack, tf1, sp1, context, listImsiListTrue,tcpServer,callBackSetState);
                                         }
                                     }
 
@@ -4542,7 +4541,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
      * @param down
      */
     @Override
-    public void saopinjianlixiaoqu(Context context, int device, String tf, String down) {
+    public void saopinjianlixiaoqu(Context context, int device, String tf, String down,CallBackSetState callBackSetState) {
         if (device == 1) {
             if (tf.equals("定位中")) {
 
@@ -4596,7 +4595,7 @@ public class SOSPersent implements SOSVIEW.MainPresenter {
                 if (sendListBlack.size() > 20) {
                     ToastUtils.showToast("符合条件的黑名单列表大于20");
                 } else {
-                    sendBlackListRun(sendListBlack, tf, down, context, listImsiListTrue,null);
+                    sendBlackListRun(sendListBlack, tf, down, context, listImsiListTrue,null,callBackSetState);
                 }
 //
             } else {

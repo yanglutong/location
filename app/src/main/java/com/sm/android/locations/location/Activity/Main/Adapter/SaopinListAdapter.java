@@ -69,17 +69,22 @@ public class SaopinListAdapter extends RecyclerView.Adapter<SaopinListAdapter.Vi
         if (spbeanlist1.get(position).getRsrp() == 0) {
             holder.tv_rsrp.setText("-");
         } else {
-            int rsrp = spbeanlist1.get(position).getRsrp();
-            int rsrpset = rsrp - 140;
-            holder.tv_rsrp.setText("" + rsrpset);
+            holder.tv_rsrp.setText(spbeanlist1.get(position).getRsrp()+"");
+
+//            int rsrp = spbeanlist1.get(position).getRsrp();
+//            int rsrpset = rsrp - 140;
+//            holder.tv_rsrp.setText("" + rsrpset);
         }
         //
         if (spbeanlist1.get(position).getRsrq() == 0) {
             holder.tv_rsrq.setText("-");
         } else {
-            double v = spbeanlist1.get(position).getRsrq() * 0.5;
-            double v1 = v - 20;
-            holder.tv_rsrq.setText("" + v1);
+                        holder.tv_rsrq.setText(spbeanlist1.get(position).getRsrq()+"");
+
+            ;
+//            double v = spbeanlist1.get(position).getRsrq() * 0.5;
+//            double v1 = v - 20;
+//            holder.tv_rsrq.setText("" + v1);
         }
         //
         if ("0".equals(spbeanlist1.get(position).getPlmn())) {

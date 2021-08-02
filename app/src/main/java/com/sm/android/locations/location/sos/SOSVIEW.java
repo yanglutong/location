@@ -6,6 +6,7 @@ import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,15 +56,15 @@ public class SOSVIEW {
          * @param spinnerDown //选择的频点
          * @param sbzhuangtai // 设备的状态
          */
-        void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer);//手动定位
-        void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer);//手动定位
+        void startSD(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer,CallBackSetState callBackSetState);//手动定位
+        void startSaoPin(int device, String tf, Context context, String spinnerDown, String sbzhuangtai, String tv, TCPServer tcpServer,CallBackSetState callBackSetState);//手动定位
         void setZy(TCPServer tcpServer,String zy);//设置增益
 
 
-        void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack);//手动建立小区
-        void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack);//手动建立小区
+        void buildSD(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack,CallBackSetState callBackSetState);//手动建立小区
+        void buildSDSaoPin(final String spinnerS1, final int i, final String sb1, final Context context,TCPServer tcpServer,List<AddPararBean> sendListBlack,CallBackSetState callBackSetState);//手动建立小区
 
-        void stopdw(final int i, final Context context, String sbzhuangtai,TCPServer tcpServer);//停止定位
+        void stopdw(final int i, final Context context, String sbzhuangtai, TCPServer tcpServer, Spinner spinner,TextView textView,CallBackSetState callBackSetState);//停止定位
 
         void setRyimsidw(Context context, RecyclerView ry_zhenma, Message msg, RyZmAdapterdw ryZmAdapter, EditText et_zhenmasearchdw, TextView tv_searchNumdw);
 
@@ -77,10 +78,10 @@ public class SOSVIEW {
 
         void spbuils(Context context, int device, int yy, String tf1, String tf2,CallBackSetState c);//扫频
 
-        void setStart(int device, final boolean b, final int maintype, final String sb1, String sb2, final String sp1, final String sp2, final Context context, final String tf1, final String tf2, int restart, boolean phoneFalg);
-        void setStartYy(TCPServer tcpServer,int device, final boolean b, String sb, final String sp, final Context context,  final String tf, boolean phoneFalg);
+        void setStart(int device, final boolean b, final int maintype, final String sb1, String sb2, final String sp1, final String sp2, final Context context, final String tf1, final String tf2, int restart, boolean phoneFalg,CallBackSetState callBackSetState);
+        void setStartYy(TCPServer tcpServer,int device, final boolean b, String sb, final String sp, final Context context,  final String tf, boolean phoneFalg,CallBackSetState callBackSetState);
 
-        void saopinjianlixiaoqu(Context context, int device, String tf, String down);
+        void saopinjianlixiaoqu(Context context, int device, String tf, String down,CallBackSetState callBackSetState);
 
         void setlaba(Context context, ImageView imageView, int device, boolean laba);
 

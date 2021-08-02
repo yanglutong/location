@@ -7,13 +7,43 @@ package com.sm.android.locations.location.initData.bean;
 public class SaoPBeanRSRP {
     private String EARFCN;
     private String RSRP;
+    private String tac;
+    private String pci;
+    private String cid;
 
     @Override
     public String toString() {
         return "SaoPBeanRSRP{" +
                 "EARFCN='" + EARFCN + '\'' +
                 ", RSRP='" + RSRP + '\'' +
+                ", tac='" + tac + '\'' +
+                ", pci='" + pci + '\'' +
+                ", cid='" + cid + '\'' +
                 '}';
+    }
+
+    public String getTac() {
+        return tac;
+    }
+
+    public void setTac(String tac) {
+        this.tac = tac;
+    }
+
+    public String getPci() {
+        return pci;
+    }
+
+    public void setPci(String pci) {
+        this.pci = pci;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public void setCid(String cid) {
+        this.cid = cid;
     }
 
     public String getEARFCN() {

@@ -8791,14 +8791,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         dialog = new Dialog(MainActivity.this, R.style.menuDialogStyleDialogStyle);
         inflate = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_item_title, null);
         TextView tv_title = inflate.findViewById(R.id.tv_title);
-        tv_title.setText("确定要停止定位1吗?");
+        tv_title.setText("确定要停止定位吗?");
         Button bt_confirm = inflate.findViewById(R.id.bt_confirm);
         bt_confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainUtils.StopLocation(IP1);
+                //停止定位就是就绪状态
+
+//                MainUtils.StopLocation(IP1);
                 GFFLAG1 = 2;
-                MainUtils.OpenGF1(1, 2, handler);
+//                MainUtils.OpenGF1(1, 2, handler);
 
 
                 if (itemtype1.equals(TITLEZD)) {//如果是扫频模式

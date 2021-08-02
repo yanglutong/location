@@ -69,14 +69,14 @@ public class SaoPinActivity extends BaseActivity implements View.OnClickListener
 
         if(type.equals("3")){
             if(SOSActivity.xqck.size()>0){
-                UtilsView.setViewVisibility(this, layout, title, imageView, "设备1小区信息", false, iv_finish, true);
+                UtilsView.setViewVisibility(this, layout, title, imageView, "设备小区信息", false, iv_finish, true);
                 SaopinListAdapter saopinListAdapter = new SaopinListAdapter(SaoPinActivity.this,SOSActivity.xqck);
                 ry.setAdapter(saopinListAdapter);
             }
 
         }
         if (type.equals("1")) {
-            UtilsView.setViewVisibility(this, layout, title, imageView, "设备1小区信息", false, iv_finish, true);
+            UtilsView.setViewVisibility(this, layout, title, imageView, "设备小区信息", false, iv_finish, true);
 
 //            for (int i = 0; i <20 ; i++) {
 //                SpBean spBean=new SpBean();

@@ -147,7 +147,7 @@ public class CommunitFragment1 extends BaseFragment implements View.OnClickListe
         tv1edit = view.findViewById(R.id.tv1edit);
 
 
-        tv1edit.setText("请输入设备1参数");
+        tv1edit.setText("请输入设备参数");
         mBt_save = (Button) view.findViewById(R.id.bt_save);
         mBt_save.setOnClickListener(this);
         bt_cancel = view.findViewById(R.id.bt_cancel);
@@ -262,6 +262,22 @@ public class CommunitFragment1 extends BaseFragment implements View.OnClickListe
                 if(!CommandUtils.type.equals("")){
                 }else{
                     ToastUtils.showToast("离线状态无法设置");
+                    return;
+                }
+
+                if(CommandUtils.sbZt.equals("扫频中")){
+                    ToastUtils.showToast("设备正在扫频");
+                    return;
+                }
+                if(CommandUtils.sbZt.equals("定位中")){
+                    ToastUtils.showToast("正在定位中 请先停止定位");
+                    return;
+                }
+                if(CommandUtils.sbZt.equals("启动中")){
+                    ToastUtils.showToast("设备启动中");
+                    return;
+                }
+                if(!CommandUtils.sbZt.equals("就绪")){
                     return;
                 }
                 DBManagerDevice dbManagerDevice=null;

@@ -60,8 +60,7 @@ public class LunxunPinActivity extends BaseActivity implements View.OnClickListe
         Intent intent = getIntent();
         String type = intent.getStringExtra("type");
         if (type.equals("1")) {
-            UtilsView.setViewVisibility(this, layout, title, imageView, "设备1小区信息", false, iv_finish, true);
-
+            UtilsView.setViewVisibility(this, layout, title, imageView, "设备小区信息", false, iv_finish, true);
 //            for (int i = 0; i <20 ; i++) {
 //                SpBean spBean=new SpBean();
 //                spBean.setDown("500");

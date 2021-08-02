@@ -24,6 +24,8 @@ import com.sm.android.locations.location.Utils.UtilsView;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 参数列表
@@ -36,16 +38,19 @@ public class ParamActivity extends BaseActivity implements View.OnClickListener 
     private DBManagerAddParam dbManagerAddParam;
     List<AddPararBean> dataAll = null;
 
+
     TextView nullData;
     TestBaseAdapter.ITTestBaseAdapterCallBack itTestBaseAdapterCallBack = new TestBaseAdapter.ITTestBaseAdapterCallBack() {
         @Override
-        public void Call(int id, boolean checkFlag, CheckBox checkBox) {
+        public void Call(int id, boolean checkFlag, CheckBox checkBox, TestBaseAdapter.ItemViewHolder itemViewHolder) {
             Log.d("opjiohiho", "Call: " + id + "boolean---" + checkFlag);
             try {
                 AddPararBean forid = dbManagerAddParam.forid(id);
                 forid.setCheckbox(checkFlag);
                 int i1 = dbManagerAddParam.updateCheck(forid);
                 Log.d("nzqqqqqqqq", "Call: "+i1);
+
+
 
                 List<AddPararBean> dataAll = dbManagerAddParam.getDataAll();
                 List<AddPararBean> list = new ArrayList<>();

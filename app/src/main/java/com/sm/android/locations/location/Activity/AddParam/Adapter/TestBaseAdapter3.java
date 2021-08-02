@@ -62,7 +62,7 @@ public class TestBaseAdapter3 extends BaseAdapter<TestData3, TestBaseAdapter3.It
             if (LoginUtils.getBase64(data.event).equals("停止定位")) {
                 holder.nr.setText("设备："+LoginUtils.getBase64(data.sb));
             }
-            if (LoginUtils.getBase64(data.event).equals("定位")) {
+            if (LoginUtils.getBase64(data.event).equals("自动定位")||LoginUtils.getBase64(data.event).equals("手动定位")) {
                 holder.nr.setText("设备："+LoginUtils.getBase64(data.sb)+"  "+"频点："+LoginUtils.getBase64(data.pd)+"  "+"IMSI:"+LoginUtils.getBase64(data.sucessIMSI));
             }
             if (LoginUtils.getBase64(data.event).equals("侦码")) {

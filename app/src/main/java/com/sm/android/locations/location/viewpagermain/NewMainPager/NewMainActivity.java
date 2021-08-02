@@ -1710,13 +1710,13 @@ public class NewMainActivity extends BaseActivity implements View.OnClickListene
                     break;
                 case 100001:
                     if (MainType == 0) {
-                        DwUpdate.upwifi(msg, tv1_wifi_dw, tv2_wifi_dw,null);
+                        DwUpdate.upwifi(msg, tv1_wifi_dw, tv2_wifi_dw,null,null);
                     }
                     if (MainType == 1) {
-                        DwUpdate.upwifi(msg, tv1_wifi_zm, tv2_wifi_zm,null);
+                        DwUpdate.upwifi(msg, tv1_wifi_zm, tv2_wifi_zm,null,null);
                     }
                     if (MainType == 2) {
-                        DwUpdate.upwifi(msg, tv1_wifi_gk, tv2_wifi_gk,null);
+                        DwUpdate.upwifi(msg, tv1_wifi_gk, tv2_wifi_gk,null,null);
                     }
                     break;
                 case 9001:
