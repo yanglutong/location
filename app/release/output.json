@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.sm.android.locations.locationsviewpager_dan_sos",
+  "applicationId": "com.sm.android.locations.location",
   "variantName": "release",
   "elements": [
     {

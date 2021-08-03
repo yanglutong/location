@@ -66,7 +66,7 @@ public class MyTTS extends UtteranceProgressListener implements TextToSpeech.OnI
 
 //            mTextToSpeech.setPitch(1.0f);
             //设置语速
-            mTextToSpeech.setSpeechRate(3.0f);
+            mTextToSpeech.setSpeechRate(2.0f);//华为2.0  小米3.0
             int result = mTextToSpeech.setLanguage(Locale.CHINESE);
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED
